@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- ── SEO & Social ── -->
+  <title>Æsthetic — Color Palette & Font Pairing Generator</title>
+  <meta name="description" content="Generate harmonious color palettes and font pairings in one click. Export CSS variables, check WCAG contrast, and save your favorites." />
+  <meta name="author" content="Æsthetic" />
+  <link rel="canonical" href="https://gustavo-devhub.github.io/color-font-generator/" />
+
+  <!-- Open Graph — controls how link looks when shared on social -->
+  <meta property="og:type"        content="website" />
+  <meta property="og:title"       content="Æsthetic — Color Palette & Font Generator" />
+  <meta property="og:description" content="Generate harmonious color palettes and font pairings. Save favorites, export CSS, check WCAG contrast." />
+  <meta property="og:url"         content="https://gustavo-devhub.github.io/color-font-generator/" />
+
+  <!-- Twitter / X card -->
+  <meta name="twitter:card"        content="summary_large_image" />
+  <meta name="twitter:title"       content="Æsthetic — Color Palette & Font Generator" />
+  <meta name="twitter:description" content="Generate harmonious color palettes and font pairings. One click. Save, export, share." />
+
+  <!-- Mobile browser chrome color -->
+  <meta name="theme-color" content="#F2F1ED" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#0E0E0D" media="(prefers-color-scheme: dark)" />
+
+  <!-- ── Fonts ── -->
+  <!-- Shell UI: Inter + Source Sans 3 + DM Mono + Playfair Display (hero mood label) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Sans+3:wght@400;500;600&family=DM+Mono:wght@400;500&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ══════════════════════════════════════
+       HEADER
+  ══════════════════════════════════════ -->
+  <header class="header" role="banner">
+    <div class="header__inner">
+
+      <div class="header__brand">
+        <span class="header__wordmark">Æsthetic</span>
+        <span class="header__tagline">Palette &amp; Type Generator</span>
+      </div>
+
+      <nav class="header__actions" aria-label="App actions">
+        <!-- Quick-load curated presets -->
+        <div class="preset-bar" role="group" aria-label="Quick presets">
+          <button class="btn-preset" data-preset="minimal" title="Load Minimal preset">Minimal</button>
+          <button class="btn-preset" data-preset="playful" title="Load Playful preset">Playful</button>
+          <button class="btn-preset" data-preset="bold"    title="Load Bold preset">Bold</button>
+        </div>
+
+        <div class="header__tools">
+          <button id="btn-favorites-panel" class="btn-icon-label"
+                  aria-expanded="false" aria-controls="favorites-panel"
+                  title="Open saved favorites">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+            </svg>
+            <span>Saved</span>
+            <span class="fav-count-badge" id="fav-count-badge" aria-label="saved count">0</span>
+          </button>
+
+          <button id="btn-export-css" class="btn-ghost" title="Copy palette as CSS custom properties">CSS</button>
+          <button id="btn-export-png" class="btn-ghost" title="Download as PNG card">PNG</button>
+          <button id="btn-share"      class="btn-ghost" title="Copy shareable link">Share</button>
+
+          <!-- Dark / light toggle -->
+          <label class="theme-toggle" title="Toggle dark mode" aria-label="Toggle dark mode">
+            <input type="checkbox" id="theme-checkbox" role="switch" />
+            <span class="toggle-track" aria-hidden="true">
+              <span class="toggle-thumb"></span>
+              <span class="toggle-sun">☀</span>
+              <span class="toggle-moon">☽</span>
+            </span>
+          </label>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ══════════════════════════════════════
+       FAVORITES PANEL (slide-in drawer)
+  ══════════════════════════════════════ -->
+  <aside class="favorites-panel" id="favorites-panel"
+         role="complementary" aria-label="Saved aesthetics" aria-hidden="true">
+    <div class="favorites-panel__header">
+      <h2 class="favorites-panel__title">Saved Aesthetics</h2>
+      <button class="btn-close-panel" id="btn-close-panel" aria-label="Close favorites panel">✕</button>
+    </div>
+    <div class="favorites-panel__body" id="favorites-list"></div>
+    <p class="favorites-empty" id="favorites-empty">
+      No saved aesthetics yet.<br>Hit the ♥ button to save one.
+    </p>
+  </aside>
+  <div class="panel-overlay" id="panel-overlay" aria-hidden="true"></div>
+
+  <!-- ══════════════════════════════════════
+       MAIN
+  ══════════════════════════════════════ -->
+  <main class="main" id="main-content">
+
+    <!-- HERO -->
+    <section class="hero" aria-label="Current aesthetic">
+      <div class="hero__label-group">
+        <p class="hero__eyebrow">
+          <span class="eyebrow-dash" aria-hidden="true"></span>
+          Current Aesthetic
+        </p>
+        <h1 class="hero__mood" id="mood-label">—</h1>
+        <div class="hero__meta">
+          <span class="tag" id="scheme-tag">—</span>
+        </div>
+      </div>
+
+      <div class="hero__cta">
+        <button id="btn-generate" class="btn-generate" aria-label="Generate new aesthetic">
+          <span class="btn-generate__label">Generate</span>
+          <span class="btn-generate__sub">new aesthetic</span>
+        </button>
+        <p class="kbd-hint" aria-hidden="true">or press <kbd>Space</kbd></p>
+        <button id="btn-save-fav" class="btn-save"
+                title="Save this aesthetic" aria-label="Save current aesthetic to favorites">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+          </svg>
+          Save
+        </button>
+      </div>
+    </section>
+
+    <!-- PALETTE -->
+    <section class="card palette-card" aria-labelledby="palette-heading">
+      <div class="card__header">
+        <h2 class="card__title" id="palette-heading">Color Palette</h2>
+        <div class="card__header-right">
+          <span class="wcag-badge" id="wcag-badge" role="status" aria-live="polite"
+                title="WCAG contrast ratio — darkest vs. lightest color">—</span>
+        </div>
+      </div>
+      <div class="palette-bars" id="palette-bars" role="list" aria-label="Color palette swatches">
+        <!-- JS rendered -->
+      </div>
+      <p class="card__hint">Click a value to cycle HEX → RGB → HSL and copy. 🔒 locks a color on next generate.</p>
+    </section>
+
+    <!-- TYPE PAIRING -->
+    <section class="card type-card" aria-labelledby="type-heading">
+      <div class="card__header">
+        <h2 class="card__title" id="type-heading">Type Pairing</h2>
+      </div>
+      <div class="type-grid">
+
+        <div class="type-tile">
+          <div class="type-tile__meta">
+            <span class="type-tile__role">Display</span>
+            <span class="type-tile__name" id="font-display-name">—</span>
+            <button class="btn-lock-font" data-target="display"
+                    aria-label="Lock display font" aria-pressed="false">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+              </svg>
+            </button>
+          </div>
+          <div class="type-divider"></div>
+          <!-- font-family set by JS only -->
+          <p class="type-preview type-preview--display" id="preview-display">The art of design</p>
+        </div>
+
+        <div class="type-tile">
+          <div class="type-tile__meta">
+            <span class="type-tile__role">Body</span>
+            <span class="type-tile__name" id="font-body-name">—</span>
+            <button class="btn-lock-font" data-target="body"
+                    aria-label="Lock body font" aria-pressed="false">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+              </svg>
+            </button>
+          </div>
+          <div class="type-divider"></div>
+          <!-- font-family set by JS only -->
+          <p class="type-preview type-preview--body" id="preview-body">
+            Good typography is invisible. It guides the reader through content effortlessly, never calling attention to itself — only to the meaning within.
+          </p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- LIVE PREVIEW -->
+    <!--
+      DESIGN DECISION: .preview-bg background-color is set by JS using generated colors.
+      The card shell (.card, .card__header) always uses theme tokens.
+      This keeps generated output spotlighted against a neutral frame.
+    -->
+    <section class="card preview-card" aria-labelledby="preview-heading">
+      <div class="card__header">
+        <h2 class="card__title" id="preview-heading">Preview</h2>
+        <span class="card__hint-inline">Colors in a realistic UI context</span>
+      </div>
+
+      <div class="preview-bg" id="preview-bg" aria-label="Live preview of generated aesthetic">
+        <div class="preview-content" id="preview-content">
+          <p class="preview-overline" id="preview-overline">Collection No. 01</p>
+          <h3 class="preview-headline" id="preview-headline">Visual harmony starts here</h3>
+          <p class="preview-copy" id="preview-copy">
+            Every great design begins with a considered palette and a thoughtful type system. These are the silent foundations on which meaning is built.
+          </p>
+          <div class="preview-chips" id="preview-chips"></div>
+        </div>
+        <div class="preview-strip" id="preview-strip" aria-hidden="true"></div>
+      </div>
+
+      <!-- Per-color WCAG contrast rows -->
+      <div class="wcag-grid" id="wcag-grid" aria-label="WCAG contrast details">
+        <!-- JS rendered -->
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer" role="contentinfo">
+    <span class="footer__note">Æsthetic — Color &amp; Type Generator · Portfolio Project</span>
+    <span class="footer__note">Space to generate · ♥ to save · built with vanilla JS</span>
+  </footer>
+
+  <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
+  <canvas id="export-canvas" style="display:none;" aria-hidden="true"></canvas>
+
+  <script src="script.js"></script>
+</body>
+</html>
