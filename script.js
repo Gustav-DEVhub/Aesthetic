@@ -335,7 +335,6 @@ function applyFavorite(snapshot) {
   loadFont(state.fontPair.display);
   loadFont(state.fontPair.body);
   renderAll();
-  encodeURL();
   closeFavoritesPanel();
   showToast('Aesthetic applied');
 }
@@ -381,7 +380,7 @@ function generate() {
   document.getElementById('btn-save-fav').classList.remove('saved');
 
   renderAll();
-  encodeURL();
+  encodeURL(); // update address bar with new readable hash
 }
 
 /** Load a named preset into state */
@@ -403,7 +402,7 @@ function loadPreset(name) {
     btn.classList.toggle('active', btn.dataset.preset === name);
   });
   renderAll();
-  encodeURL();
+  encodeURL(); // keep URL in sync when preset loads
 }
 
 /* ─────────────────────────────────────────
@@ -666,40 +665,109 @@ function closeFavoritesPanel() {
 }
 
 /* ─────────────────────────────────────────
-   11. URL ENCODE / DECODE
-   State is encoded into the URL hash as base64 JSON.
-   This makes every generated result bookmarkable/shareable.
+   11. URL — Option A: clean, no state encoded
+   The app lives at a single clean URL. No hash, no parameters.
+   Share copies the full URL including the readable hash.
+   The hash encodes palette + fonts in a human-readable format.
+   Format: #RRGGBB+RRGGBB+...|FontName|BodyFont|mood|scheme
 ───────────────────────────────────────── */
 
+/**
+ * URL ENCODING — human-readable hash format
+ *
+ * Format: #RRGGBB+RRGGBB+RRGGBB+RRGGBB+RRGGBB|Display+Font|Body+Font|mood-name|scheme
+ *
+ * Example: #1c2d3e+5a6b7c+9a8bd2+c1d4e5+f0f1f2|DM+Serif+Display|DM+Sans|Shade+Scale|monochromatic
+ *
+ * Why this format:
+ *   - Hex colors are instantly recognizable to any developer
+ *   - Font names separated by + mirrors how URLs already work (readable)
+ *   - Pipe | cleanly separates the 5 sections without encoding issues
+ *   - No base64, no JSON — the URL is self-documenting
+ *   - Still under ~120 chars for typical cases (fits in most share previews)
+ *
+ * Trade-off: font names with special characters (accents, etc.) are
+ * percent-encoded by the browser automatically — still decodeable.
+ */
 function encodeURL() {
   try {
-    const payload = {
-      c: state.colors.map(h => h.replace('#', '')),
-      d: state.fontPair.display,
-      b: state.fontPair.body,
-      m: state.moodName,
-      s: state.scheme,
-    };
-    history.replaceState(null, '', '#' + btoa(JSON.stringify(payload)));
+    const colors  = state.colors.map(h => h.replace('#', '')).join('+');
+    const display = encodeURIComponent(state.fontPair.display);
+    const body    = encodeURIComponent(state.fontPair.body);
+    const mood    = encodeURIComponent(state.moodName);
+    const scheme  = encodeURIComponent(state.scheme);
+
+    const hash = `${colors}|${display}|${body}|${mood}|${scheme}`;
+    history.replaceState(null, '', '#' + hash);
   } catch (_) {}
 }
 
+/** Returns the full shareable URL (base + hash) */
+function buildShareURL() {
+  return window.location.href;
+}
+
+/**
+ * Decode a human-readable hash back into state.
+ * Returns true if successful, false if hash is absent or malformed.
+ * Also handles legacy base64 hashes from older app versions gracefully.
+ */
 function decodeURL() {
   try {
-    const hash = window.location.hash.slice(1);
-    if (!hash) return false;
-    const p = JSON.parse(atob(hash));
-    if (!Array.isArray(p.c) || p.c.length !== 5) return false;
-    state.colors   = p.c.map(h => `#${h}`);
-    state.fontPair = { display: p.d, body: p.b };
-    state.moodName = p.m || '—';
-    state.scheme   = p.s || 'analogous';
+    const raw = window.location.hash.slice(1);
+    if (!raw) return false;
+
+    // ── Legacy support: detect old base64 format (no pipe separator) ──
+    // Old format was pure base64 JSON. If we see no '|' and the string
+    // looks like base64, try to decode it the old way then migrate.
+    if (!raw.includes('|')) {
+      try {
+        const p = JSON.parse(atob(raw));
+        if (Array.isArray(p.c) && p.c.length === 5) {
+          state.colors   = p.c.map(h => `#${h}`);
+          state.fontPair = { display: p.d, body: p.b };
+          state.moodName = p.m || '—';
+          state.scheme   = p.s || 'analogous';
+          loadFont(state.fontPair.display);
+          loadFont(state.fontPair.body);
+          encodeURL(); // immediately migrate URL to new readable format
+          return true;
+        }
+      } catch (_) {}
+      // Not a valid old hash either — clean up and return false
+      history.replaceState(null, '', window.location.pathname);
+      return false;
+    }
+
+    // ── New readable format: colors|display|body|mood|scheme ──
+    const parts = raw.split('|');
+    if (parts.length < 3) return false;
+
+    const hexParts = parts[0].split('+');
+    if (hexParts.length !== 5) return false;
+
+    // Validate each hex segment is a 6-char hex string
+    const validHex = /^[0-9a-fA-F]{6}$/;
+    if (!hexParts.every(h => validHex.test(h))) return false;
+
+    state.colors   = hexParts.map(h => `#${h}`);
+    state.fontPair = {
+      display: decodeURIComponent(parts[1] || 'Playfair Display'),
+      body:    decodeURIComponent(parts[2] || 'DM Sans'),
+    };
+    state.moodName = parts[3] ? decodeURIComponent(parts[3]) : '—';
+    state.scheme   = parts[4] ? decodeURIComponent(parts[4]) : 'analogous';
+
     loadFont(state.fontPair.display);
     loadFont(state.fontPair.body);
     return true;
-  } catch (_) { return false; }
-}
 
+  } catch (_) {
+    // Any parse error → clean URL, fall through to default preset
+    history.replaceState(null, '', window.location.pathname);
+    return false;
+  }
+}
 /* ─────────────────────────────────────────
    12. EXPORT CSS
 ───────────────────────────────────────── */
@@ -850,8 +918,11 @@ function bindEvents() {
   // Toolbar buttons
   document.getElementById('btn-export-css').addEventListener('click', exportCSS);
   document.getElementById('btn-export-png').addEventListener('click', exportPNG);
-  document.getElementById('btn-share').addEventListener('click', () =>
-    copyText(window.location.href, 'Link copied!')
+  document.getElementById('btn-share').addEventListener('click', () => {
+    const url = buildShareURL();
+    if (url) copyText(url, 'Link copied! ↗');
+    else copyText(window.location.href, 'Link copied!');
+  }
   );
 
   // Save / favorites
