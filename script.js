@@ -22,22 +22,140 @@
    1. DATA — Font pairs & mood names
 ───────────────────────────────────────── */
 
+/*
+  96 curated font pairs — every entry follows the core rule of
+  typographic contrast: a distinctive display face paired with a
+  neutral, highly-legible body font. Organised into 8 mood categories
+  of 12 pairs each so the generator covers the full emotional spectrum.
+
+  Categories:
+  A — Editorial / Literary      (classic serifs, refined bodies)
+  B — Luxury / High Fashion     (didone & refined display + clean sans)
+  C — Warm & Humanist           (friendly serifs + humanist sans)
+  D — Bold & Expressive         (heavy display + grounded body)
+  E — Geometric / Modernist     (structured, Bauhaus-influenced)
+  F — Tech & Functional         (monospace display or clean UI fonts)
+  G — Soft & Organic            (rounded, gentle, approachable)
+  H — Condensed & Editorial     (tall, tight display + open body)
+
+  All fonts are available on Google Fonts (free, no API key needed).
+  The font loader injects each face on first use, so unused pairs
+  never incur a network request.
+*/
 const FONT_PAIRS = [
-  { display: 'Playfair Display',   body: 'DM Sans' },
-  { display: 'Cormorant Garamond', body: 'Jost' },
-  { display: 'Libre Baskerville',  body: 'Source Sans 3' },
-  { display: 'DM Serif Display',   body: 'DM Sans' },
-  { display: 'Fraunces',           body: 'Nunito Sans' },
-  { display: 'Bodoni Moda',        body: 'Mulish' },
-  { display: 'Abril Fatface',      body: 'Lato' },
-  { display: 'Spectral',           body: 'Work Sans' },
-  { display: 'Lora',               body: 'Open Sans' },
-  { display: 'Rozha One',          body: 'Rubik' },
-  { display: 'Crimson Pro',        body: 'IBM Plex Sans' },
-  { display: 'Josefin Slab',       body: 'Josefin Sans' },
-  { display: 'Yeseva One',         body: 'Josefin Sans' },
-  { display: 'Bebas Neue',         body: 'Source Sans 3' },
-  { display: 'Philosopher',        body: 'PT Sans' },
+
+  // ── A: EDITORIAL / LITERARY ──────────────────────────────
+  { display: 'Playfair Display',    body: 'DM Sans'          },
+  { display: 'Cormorant Garamond',  body: 'Jost'             },
+  { display: 'Libre Baskerville',   body: 'Source Sans 3'    },
+  { display: 'DM Serif Display',    body: 'DM Sans'          },
+  { display: 'Spectral',            body: 'Work Sans'        },
+  { display: 'Lora',                body: 'Open Sans'        },
+  { display: 'Crimson Pro',         body: 'IBM Plex Sans'    },
+  { display: 'Philosopher',         body: 'PT Sans'          },
+  { display: 'EB Garamond',         body: 'Lato'             },
+  { display: 'Playfair Display SC', body: 'Raleway'          },
+  { display: 'Cardo',               body: 'Karla'            },
+  { display: 'Sorts Mill Goudy',    body: 'Source Sans 3'    },
+
+  // ── B: LUXURY / HIGH FASHION ─────────────────────────────
+  { display: 'Bodoni Moda',         body: 'Mulish'           },
+  { display: 'Cormorant',           body: 'Montserrat'       },
+  { display: 'Yeseva One',          body: 'Josefin Sans'     },
+  { display: 'GFS Didot',           body: 'Open Sans'        },
+  { display: 'Playfair Display',    body: 'Montserrat'       },
+  { display: 'Cormorant Garamond',  body: 'Raleway'          },
+  { display: 'Cormorant Infant',    body: 'Nunito Sans'      },
+  { display: 'Bodoni Moda',         body: 'IBM Plex Sans'    },
+  { display: 'Oranienbaum',         body: 'Mulish'           },
+  { display: 'Rufina',              body: 'Work Sans'        },
+  { display: 'Forum',               body: 'Source Sans 3'    },
+  { display: 'Unna',                body: 'DM Sans'          },
+
+  // ── C: WARM & HUMANIST ───────────────────────────────────
+  { display: 'Fraunces',            body: 'Nunito Sans'      },
+  { display: 'Lora',                body: 'Nunito'           },
+  { display: 'Bitter',              body: 'Nunito'           },
+  { display: 'Vollkorn',            body: 'Lato'             },
+  { display: 'Arvo',                body: 'Open Sans'        },
+  { display: 'Merriweather',        body: 'Source Sans 3'    },
+  { display: 'Zilla Slab',          body: 'Rubik'            },
+  { display: 'Crete Round',         body: 'Open Sans'        },
+  { display: 'Tinos',               body: 'Nunito Sans'      },
+  { display: 'Noticia Text',        body: 'Lato'             },
+  { display: 'Cambo',               body: 'PT Sans'          },
+  { display: 'Gilda Display',       body: 'Raleway'          },
+
+  // ── D: BOLD & EXPRESSIVE ─────────────────────────────────
+  { display: 'Abril Fatface',       body: 'Lato'             },
+  { display: 'Rozha One',           body: 'Rubik'            },
+  { display: 'Bebas Neue',          body: 'Source Sans 3'    },
+  { display: 'Anton',               body: 'Open Sans'        },
+  { display: 'Black Han Sans',      body: 'DM Sans'          },
+  { display: 'Passion One',         body: 'Lato'             },
+  { display: 'Alfa Slab One',       body: 'Work Sans'        },
+  { display: 'Righteous',           body: 'Nunito Sans'      },
+  { display: 'Titan One',           body: 'Source Sans 3'    },
+  { display: 'Fugaz One',           body: 'Open Sans'        },
+  { display: 'Lilita One',          body: 'Mulish'           },
+  { display: 'Bangers',             body: 'IBM Plex Sans'    },
+
+  // ── E: GEOMETRIC / MODERNIST ─────────────────────────────
+  { display: 'Josefin Slab',        body: 'Josefin Sans'     },
+  { display: 'Josefin Sans',        body: 'Source Sans 3'    },
+  { display: 'Poiret One',          body: 'Raleway'          },
+  { display: 'Quantico',            body: 'DM Sans'          },
+  { display: 'Michroma',            body: 'Open Sans'        },
+  { display: 'Orbitron',            body: 'Source Sans 3'    },
+  { display: 'Exo 2',               body: 'Nunito Sans'      },
+  { display: 'Rajdhani',            body: 'Lato'             },
+  { display: 'Audiowide',           body: 'IBM Plex Sans'    },
+  { display: 'Unica One',           body: 'Karla'            },
+  { display: 'Archivo Black',       body: 'Archivo'          },
+  { display: 'Barlow Semi Condensed',body:'Barlow'           },
+
+  // ── F: TECH & FUNCTIONAL ─────────────────────────────────
+  { display: 'IBM Plex Serif',      body: 'IBM Plex Sans'    },
+  { display: 'Space Grotesk',       body: 'Space Mono'       },
+  { display: 'Space Mono',          body: 'DM Sans'          },
+  { display: 'Fira Code',           body: 'Fira Sans'        },
+  { display: 'JetBrains Mono',      body: 'Source Sans 3'    },
+  { display: 'Roboto Slab',         body: 'Roboto'           },
+  { display: 'Roboto Mono',         body: 'Roboto'           },
+  { display: 'Source Code Pro',     body: 'Source Sans 3'    },
+  { display: 'Share Tech Mono',     body: 'Share Tech'       },
+  { display: 'Courier Prime',       body: 'Open Sans'        },
+  { display: 'Cutive Mono',         body: 'Nunito Sans'      },
+  { display: 'PT Mono',             body: 'PT Sans'          },
+
+  // ── G: SOFT & ORGANIC ────────────────────────────────────
+  { display: 'Pacifico',            body: 'Nunito'           },
+  { display: 'Lobster',             body: 'Lato'             },
+  { display: 'Satisfy',             body: 'Open Sans'        },
+  { display: 'Dancing Script',      body: 'Nunito Sans'      },
+  { display: 'Sacramento',          body: 'Source Sans 3'    },
+  { display: 'Great Vibes',         body: 'Raleway'          },
+  { display: 'Kaushan Script',      body: 'Lato'             },
+  { display: 'Courgette',           body: 'Open Sans'        },
+  { display: 'Damion',              body: 'DM Sans'          },
+  { display: 'Caveat',              body: 'Nunito Sans'      },
+  { display: 'Indie Flower',        body: 'PT Sans'          },
+  { display: 'Shadows Into Light',  body: 'Open Sans'        },
+
+  // ── H: CONDENSED & EDITORIAL ─────────────────────────────
+  { display: 'Oswald',              body: 'Source Sans 3'    },
+  { display: 'Barlow Condensed',    body: 'Barlow'           },
+  { display: 'Yanone Kaffeesatz',   body: 'Open Sans'        },
+  { display: 'Ubuntu Condensed',    body: 'Ubuntu'           },
+  { display: 'Encode Sans Condensed',body:'Encode Sans'      },
+  { display: 'Fjalla One',          body: 'Cantarell'        },
+  { display: 'Squada One',          body: 'DM Sans'          },
+  { display: 'Big Shoulders Display',body:'Big Shoulders Text'},
+  { display: 'Saira Condensed',     body: 'Saira'            },
+  { display: 'Stint Ultra Condensed',body:'Source Sans 3'    },
+  { display: 'Roboto Condensed',    body: 'Roboto'           },
+  { display: 'News Cycle',          body: 'Open Sans'        },
+
 ];
 
 const MOOD_NAMES = {
@@ -163,8 +281,130 @@ function readableColor(bgHex) {
 }
 
 /* ─────────────────────────────────────────
-   3. PALETTE GENERATOR
+   2b. COLOR BLINDNESS SIMULATION
+
+   SCIENCE: Each type of color vision deficiency is modelled as a
+   3×3 linear RGB transformation matrix from Brettel, Viénot & Mollon
+   (1997) and Machado et al. (2009) — the same academic basis used by
+   Figma's accessibility plugin and Adobe's Proof Colors feature.
+
+   HOW IT WORKS:
+   1. Gamma-expand sRGB 0-255 to linear light values 0-1
+   2. Multiply by the deficiency matrix
+   3. Gamma-compress linear back to sRGB
+   4. Clamp, convert back to hex
+
+   WHY LINEARISE: The sRGB gamma curve makes channel mixing non-linear.
+   Doing the matrix multiply in gamma-encoded space produces visibly
+   wrong results — colors too dark, wrong hues. Not optional.
+
+   SIMULATION IS READ-ONLY: state.colors is never modified.
+   simColors() returns transformed copies for rendering only.
 ───────────────────────────────────────── */
+
+/*
+  Transformation matrices — row = [r_out, g_out, b_out] as linear
+  combination of [r_in, g_in, b_in].
+  Source: Machado et al. (2009) doi:10.1109/TVCG.2009.113
+*/
+const CVD_MATRICES = {
+  deuteranopia: [   // red-green, green-weak (~6% of men, most common)
+    [ 0.367322, 0.860646, -0.227968],
+    [ 0.280085, 0.672501,  0.047413],
+    [-0.011820, 0.042940,  0.968881],
+  ],
+  protanopia: [     // red-green, red-weak (~2% of men)
+    [ 0.152286, 1.052583, -0.204868],
+    [ 0.114503, 0.786281,  0.099216],
+    [-0.003882,-0.048116,  1.051998],
+  ],
+  tritanopia: [     // blue-yellow weakness (~0.01%)
+    [ 1.255528,-0.076749,-0.178779],
+    [-0.078411, 0.930809, 0.147602],
+    [ 0.004733, 0.691367, 0.303900],
+  ],
+  achromatopsia: [  // full grayscale (ITU-R BT.709 luminance weights)
+    [ 0.212656, 0.715158, 0.072186],
+    [ 0.212656, 0.715158, 0.072186],
+    [ 0.212656, 0.715158, 0.072186],
+  ],
+};
+
+/** sRGB gamma expand: encoded byte → linear light */
+function srgbToLinear(c) {
+  const s = c / 255;
+  return s <= 0.04045 ? s / 12.92 : Math.pow((s + 0.055) / 1.055, 2.4);
+}
+
+/** sRGB gamma compress: linear light → encoded byte */
+function linearToSrgb(c) {
+  const clamped = Math.min(1, Math.max(0, c));
+  return Math.round(
+    clamped <= 0.0031308
+      ? clamped * 12.92 * 255
+      : (1.055 * Math.pow(clamped, 1 / 2.4) - 0.055) * 255
+  );
+}
+
+/** Apply a CVD matrix to a single hex color. Returns new hex string. */
+function applyMatrix(hex, matrix) {
+  const { r, g, b } = hexToRgb(hex);
+  const rl = srgbToLinear(r), gl = srgbToLinear(g), bl = srgbToLinear(b);
+  const [m0, m1, m2] = matrix;
+  const ro = m0[0]*rl + m0[1]*gl + m0[2]*bl;
+  const go = m1[0]*rl + m1[1]*gl + m1[2]*bl;
+  const bo = m2[0]*rl + m2[1]*gl + m2[2]*bl;
+  const rs = linearToSrgb(ro), gs = linearToSrgb(go), bs = linearToSrgb(bo);
+  return '#' + rs.toString(16).padStart(2,'0')
+             + gs.toString(16).padStart(2,'0')
+             + bs.toString(16).padStart(2,'0');
+}
+
+/**
+ * Returns palette colors as perceived under the active simulation.
+ * 'none' → returns state.colors as-is.
+ * This is the single point of truth for "which colors do I render?"
+ * Every render function calls this instead of state.colors directly.
+ */
+/**
+ * Returns the active colors (sliced to swatchCount) with simulation applied.
+ * This is the single source of truth for "what colors am I rendering?"
+ */
+function simColors() {
+  const colors = state.swatchCount === 3
+    ? [state.colors[0], state.colors[2], state.colors[4]] // pick spread of 3 from 5
+    : state.colors;
+  if (activeSimulation === 'none') return colors;
+  const matrix = CVD_MATRICES[activeSimulation];
+  return colors.map(hex => applyMatrix(hex, matrix));
+}
+
+/**
+ * Semantic color role mapping — works for both 3 and 5 swatches.
+ * 3-swatch: bg=0, accent=1, light=2, surface≈bg, muted≈accent
+ * 5-swatch: bg=0, surface=1, accent=2, muted=3, light=4
+ */
+function colorRoles() {
+  const sc = simColors();
+  if (state.swatchCount === 3) {
+    const [bg, accent, light] = sc;
+    return {
+      bg, surface: bg, accent, muted: accent, light,
+      onBg:      readableColor(bg),
+      onSurface: readableColor(bg),
+      onAccent:  readableColor(accent),
+      onLight:   readableColor(light),
+    };
+  }
+  const [bg, surface, accent, muted, light] = sc;
+  return {
+    bg, surface, accent, muted, light,
+    onBg:      readableColor(bg),
+    onSurface: readableColor(surface),
+    onAccent:  readableColor(accent),
+    onLight:   readableColor(light),
+  };
+}
 
 /**
  * Generate 5 harmonious colors using a random color theory scheme.
@@ -242,9 +482,15 @@ const state = {
   lockedColors:  [false, false, false, false, false],
   lockedDisplay: false,
   lockedBody:    false,
-  // colorModes[i] cycles: 'hex' → 'rgb' → 'hsl'
   colorModes:    ['hex', 'hex', 'hex', 'hex', 'hex'],
   isDark:        false,
+  isEdited:      false,
+  /*
+    swatchCount: how many colors to show. 3 or 5.
+    Generator always produces 5; we just display the first N.
+    colorRoles() maps the first N into semantic slots.
+  */
+  swatchCount:   5,
 };
 
 /* ─────────────────────────────────────────
@@ -363,12 +609,10 @@ function generate() {
   state.scheme   = scheme;
   state.moodName = pickMood(scheme);
 
-  // Respect locks — only overwrite unlocked slots
   state.colors = state.colors.map((old, i) =>
     state.lockedColors[i] ? old : newColors[i]
   );
 
-  // Same for font pair
   const newPair = FONT_PAIRS[Math.floor(Math.random() * FONT_PAIRS.length)];
   if (!state.lockedDisplay) state.fontPair = { ...state.fontPair, display: newPair.display };
   if (!state.lockedBody)    state.fontPair = { ...state.fontPair, body:    newPair.body    };
@@ -376,11 +620,15 @@ function generate() {
   loadFont(state.fontPair.display);
   loadFont(state.fontPair.body);
 
-  // Reset save button state (new aesthetic, not saved yet)
   document.getElementById('btn-save-fav').classList.remove('saved');
+  state.isEdited = false;
+  closeColorPicker();
+  editorialCopyIndex++;
 
+  // renderPalette() updates bars in-place — the CSS background-color
+  // transition (.35s ease) plays automatically. No pre-update needed.
   renderAll();
-  encodeURL(); // update address bar with new readable hash
+  encodeURL();
 }
 
 /** Load a named preset into state */
@@ -397,6 +645,7 @@ function loadPreset(name) {
   loadFont(p.fontPair.display);
   loadFont(p.fontPair.body);
   document.getElementById('btn-save-fav').classList.remove('saved');
+  state.isEdited = false;
   // Highlight active preset button
   document.querySelectorAll('.btn-preset').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.preset === name);
@@ -427,60 +676,378 @@ function renderMood() {
   });
 
   const schemeEl = document.getElementById('scheme-tag');
-  schemeEl.textContent = state.scheme.charAt(0).toUpperCase() + state.scheme.slice(1);
+  const schemeName = state.scheme.charAt(0).toUpperCase() + state.scheme.slice(1);
+  /*
+    If the user has manually edited colors, append a small "edited" indicator.
+    This is honest feedback — the palette is no longer a pure color-theory scheme.
+    We keep it subtle: a dot + text, not a warning.
+  */
+  schemeEl.innerHTML = state.isEdited
+    ? `${schemeName} <span class="tag-edited" aria-label="manually edited">· edited</span>`
+    : schemeName;
 }
 
-/** Render all 5 palette bars */
+/** Render palette bars — count determined by state.swatchCount (3 or 5).
+ *
+ *  SMOOTH TRANSITIONS: We never destroy existing bars. Instead we update
+ *  their background-color and inner content in-place, so the CSS
+ *  background-color transition (.35s ease) always plays — whether the
+ *  change came from generate(), a preset, or the color picker.
+ *
+ *  We only create/remove bar elements when the swatch COUNT changes.
+ */
 function renderPalette() {
   const container = document.getElementById('palette-bars');
-  container.innerHTML = '';
+  const indices   = state.swatchCount === 3 ? [0, 2, 4] : [0, 1, 2, 3, 4];
+  const simmed    = simColors();
 
-  state.colors.forEach((hex, i) => {
-    const fg      = readableColor(hex);
-    // Is the computed text color light? Used to pick pill variant
-    const isLight = fg !== '#141413';
-    const valStr  = fmtColorValue(hex, state.colorModes[i]);
-
+  // ── Sync bar count ──────────────────────────────────────────────────
+  // Add missing bars
+  while (container.children.length < indices.length) {
     const bar = document.createElement('div');
     bar.className = 'palette-bar';
     bar.setAttribute('role', 'listitem');
-    bar.style.backgroundColor = hex;
-    bar.setAttribute('aria-label', `Color ${i + 1}: ${hex}`);
-
     bar.innerHTML = `
       <div class="palette-bar__left">
-        <button class="color-value-pill ${isLight ? 'light-bg' : ''}"
-                style="color:${fg}"
-                data-i="${i}"
-                title="Click to copy and cycle format"
-                aria-label="Copy color value ${valStr}">${valStr}</button>
-        <span class="bar-hint" style="color:${fg}" aria-hidden="true">click to copy &amp; cycle</span>
+        <button class="color-value-pill"
+                title="Click to copy · cycles HEX → RGB → HSL"></button>
+        <span class="bar-hint" aria-hidden="true">click to copy &amp; cycle</span>
       </div>
       <div class="palette-bar__right">
-        <button class="btn-lock-swatch ${isLight ? 'light-btn' : ''} ${state.lockedColors[i] ? 'locked' : ''}"
-                style="color:${fg}"
-                data-i="${i}"
-                title="${state.lockedColors[i] ? 'Unlock' : 'Lock'} color"
-                aria-label="${state.lockedColors[i] ? 'Unlock' : 'Lock'} color ${i + 1}"
-                aria-pressed="${state.lockedColors[i]}">
-          ${state.lockedColors[i] ? '🔒' : '○'}
-        </button>
+        <div class="btn-edit-wrapper" title="Edit this color">
+          <button class="btn-edit-swatch" aria-label="Edit color">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2.5"
+                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+            </svg>
+          </button>
+        </div>
+        <button class="btn-lock-swatch" aria-label="Lock color">○</button>
       </div>
     `;
-
-    bar.querySelector('.color-value-pill').addEventListener('click', () => {
-      const modes = ['hex', 'rgb', 'hsl'];
-      state.colorModes[i] = modes[(modes.indexOf(state.colorModes[i]) + 1) % 3];
-      copyText(fmtColorValue(hex, state.colorModes[i]));
-      renderPalette(); // re-render to update pill text
-    });
-
-    bar.querySelector('.btn-lock-swatch').addEventListener('click', () => {
-      state.lockedColors[i] = !state.lockedColors[i];
-      renderPalette();
-    });
-
     container.appendChild(bar);
+  }
+  // Remove extra bars
+  while (container.children.length > indices.length) {
+    container.lastElementChild.remove();
+  }
+
+  // ── Update each bar in-place ────────────────────────────────────────
+  Array.from(container.children).forEach((bar, slotIdx) => {
+    const colorIdx   = indices[slotIdx];
+    const hex        = state.colors[colorIdx];
+    const displayHex = simmed[slotIdx];
+    const fg         = readableColor(displayHex);
+    const isLight    = fg !== '#141413';
+    const valStr     = fmtColorValue(hex, state.colorModes[colorIdx]);
+    const locked     = state.lockedColors[colorIdx];
+
+    // Background — CSS transition plays automatically since element persists
+    bar.style.backgroundColor = displayHex;
+    bar.setAttribute('aria-label', `Color ${colorIdx + 1}: ${hex}`);
+
+    // Pill
+    const pill = bar.querySelector('.color-value-pill');
+    pill.textContent = valStr;
+    pill.style.color = fg;
+    pill.className   = `color-value-pill${isLight ? ' light-bg' : ''}`;
+    pill.setAttribute('aria-label', `Copy ${valStr}`);
+
+    // Hint
+    const hint = bar.querySelector('.bar-hint');
+    hint.style.color = fg;
+
+    // Edit button
+    const editBtn = bar.querySelector('.btn-edit-swatch');
+    editBtn.className = `btn-edit-swatch${isLight ? ' light-btn' : ''}`;
+    editBtn.setAttribute('aria-label', `Edit color ${colorIdx + 1}`);
+
+    // Lock button
+    const lockBtn = bar.querySelector('.btn-lock-swatch');
+    lockBtn.className   = `btn-lock-swatch${isLight ? ' light-btn' : ''}${locked ? ' locked' : ''}`;
+    lockBtn.style.color = fg;
+    lockBtn.title       = `${locked ? 'Unlock' : 'Lock'} color`;
+    lockBtn.setAttribute('aria-label', `${locked ? 'Unlock' : 'Lock'} color ${colorIdx + 1}`);
+    lockBtn.setAttribute('aria-pressed', locked);
+    lockBtn.textContent = locked ? '🔒' : '○';
+
+    // Re-bind events only when the slot's colorIdx changes (data-color-idx tracks this)
+    const prevIdx = parseInt(bar.dataset.colorIdx ?? '-1');
+    if (prevIdx !== colorIdx) {
+      bar.dataset.colorIdx = colorIdx;
+
+      // Clone to strip old listeners, then re-append children
+      const newPill = pill.cloneNode(true);
+      pill.replaceWith(newPill);
+      newPill.addEventListener('click', () => {
+        const modes = ['hex', 'rgb', 'hsl'];
+        state.colorModes[colorIdx] = modes[(modes.indexOf(state.colorModes[colorIdx]) + 1) % 3];
+        copyText(fmtColorValue(state.colors[colorIdx], state.colorModes[colorIdx]));
+        newPill.textContent = fmtColorValue(state.colors[colorIdx], state.colorModes[colorIdx]);
+      });
+
+      const newEdit = editBtn.cloneNode(true);
+      editBtn.replaceWith(newEdit);
+      newEdit.addEventListener('click', (e) => {
+        e.stopPropagation();
+        e.currentTarget.blur();
+        openColorPicker(bar, colorIdx);
+      });
+
+      const newLock = lockBtn.cloneNode(true);
+      lockBtn.replaceWith(newLock);
+      newLock.addEventListener('click', e => {
+        state.lockedColors[colorIdx] = !state.lockedColors[colorIdx];
+        e.currentTarget.blur();
+        renderPalette();
+      });
+    }
+  });
+}
+
+/* ─────────────────────────────────────────
+   COLOR PICKER
+───────────────────────────────────────── */
+
+let _picker      = null;  // singleton DOM node
+let _pickerIndex = -1;    // which palette slot is being edited
+let _pickerH     = 0;     // hue   0–360
+let _pickerS     = 100;   // sat   0–100
+let _pickerL     = 50;    // light 0–100
+let _rafPending  = false; // rAF throttle flag
+
+function buildColorPicker() {
+  if (_picker) return;
+  _picker = document.createElement('div');
+  _picker.className = 'cpk';
+  _picker.setAttribute('role', 'dialog');
+  _picker.setAttribute('aria-label', 'Color picker');
+  _picker.innerHTML = `
+    <div class="cpk__sl">
+      <canvas class="cpk__sl-canvas" width="216" height="148"></canvas>
+      <div class="cpk__sl-handle"></div>
+    </div>
+    <div class="cpk__hue">
+      <canvas class="cpk__hue-canvas" width="216" height="12"></canvas>
+      <div class="cpk__hue-handle"></div>
+    </div>
+    <div class="cpk__footer">
+      <div class="cpk__preview"></div>
+      <div class="cpk__hex-wrap">
+        <span class="cpk__hash">#</span>
+        <input class="cpk__hex-input" type="text" maxlength="6" spellcheck="false" aria-label="Hex value" />
+      </div>
+      <button class="cpk__close" aria-label="Close">✕</button>
+    </div>
+  `;
+  document.body.appendChild(_picker);
+  _bindPickerEvents();
+}
+
+function openColorPicker(bar, colorIndex) {
+  buildColorPicker();
+  document.querySelectorAll('.palette-bar.picker-open').forEach(b => b.classList.remove('picker-open'));
+  bar.classList.add('picker-open');
+  _pickerIndex = colorIndex;
+
+  const { h, s, l } = hexToHsl(state.colors[colorIndex]);
+  _pickerH = h; _pickerS = s; _pickerL = l;
+
+  // Position anchored to the edit button, flipping if needed
+  const btn   = bar.querySelector('.btn-edit-swatch');
+  const bRect = btn.getBoundingClientRect();
+  const PW = 236, PH = 248;
+  const sy = window.scrollY, sx = window.scrollX;
+  let top  = bRect.bottom + sy + 8;
+  let left = bRect.right  + sx - PW;
+  if (bRect.bottom + PH + 8 > window.innerHeight) top = bRect.top + sy - PH - 8;
+  left = Math.max(8 + sx, Math.min(left, window.innerWidth - PW - 8 + sx));
+  _picker.style.top  = top  + 'px';
+  _picker.style.left = left + 'px';
+  _picker.classList.add('open');
+
+  // Draw after display:flex is applied — requestAnimationFrame ensures layout is done
+  requestAnimationFrame(() => {
+    _drawSL(); _drawHue(); _moveHandle(); _syncHex(); _syncPreview();
+  });
+}
+
+function closeColorPicker() {
+  if (_picker) _picker.classList.remove('open');
+  document.querySelectorAll('.palette-bar.picker-open').forEach(b => b.classList.remove('picker-open'));
+  _pickerIndex = -1;
+}
+
+function _drawSL() {
+  const c = _picker.querySelector('.cpk__sl-canvas');
+  const ctx = c.getContext('2d');
+  const W = c.width, H = c.height;
+  // Hue → white left-to-right
+  const gh = ctx.createLinearGradient(0, 0, W, 0);
+  gh.addColorStop(0, '#fff');
+  gh.addColorStop(1, `hsl(${_pickerH},100%,50%)`);
+  ctx.fillStyle = gh; ctx.fillRect(0, 0, W, H);
+  // Black bottom-to-top overlay
+  const gv = ctx.createLinearGradient(0, 0, 0, H);
+  gv.addColorStop(0, 'rgba(0,0,0,0)');
+  gv.addColorStop(1, '#000');
+  ctx.fillStyle = gv; ctx.fillRect(0, 0, W, H);
+}
+
+function _drawHue() {
+  const c = _picker.querySelector('.cpk__hue-canvas');
+  const ctx = c.getContext('2d');
+  const W = c.width, H = c.height;
+  const g = ctx.createLinearGradient(0, 0, W, 0);
+  [0,60,120,180,240,300,360].forEach(d => g.addColorStop(d/360, `hsl(${d},100%,50%)`));
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+}
+
+function _moveHandle() {
+  const canvas  = _picker.querySelector('.cpk__sl-canvas');
+  const handle  = _picker.querySelector('.cpk__sl-handle');
+  const hCanvas = _picker.querySelector('.cpk__hue-canvas');
+  const hHandle = _picker.querySelector('.cpk__hue-handle');
+
+  const W = canvas.offsetWidth  || 216;
+  const H = canvas.offsetHeight || 148;
+
+  const px = (_pickerS / 100) * W;
+  const py = (1 - _pickerL / Math.max(1, 100 - _pickerS / 2)) * H;
+
+  const R  = 6;
+  const cx = clamp(isNaN(px) ? 0 : px, 0, W);
+  const cy = clamp(isNaN(py) ? 0 : py, 0, H);
+  handle.style.left = (cx - R) + 'px';
+  handle.style.top  = (cy - R) + 'px';
+
+  const hW  = hCanvas.offsetWidth || 216;
+  const hcx = clamp((_pickerH / 360) * hW, 0, hW);
+  hHandle.style.left = (hcx - 6) + 'px';
+}
+
+function _syncHex() {
+  _picker.querySelector('.cpk__hex-input').value =
+    hslToHex(_pickerH, _pickerS, _pickerL).replace('#','').toUpperCase();
+}
+
+function _syncPreview() {
+  _picker.querySelector('.cpk__preview').style.background =
+    hslToHex(_pickerH, _pickerS, _pickerL);
+}
+
+// Apply current HSL to the palette. During drag: minimal DOM update via rAF.
+// On release: full renderAll to sync WCAG, URL, etc.
+function _applyColor(dragging) {
+  if (_pickerIndex < 0) return;
+  const hex = hslToHex(_pickerH, _pickerS, _pickerL);
+  state.colors[_pickerIndex] = hex;
+  state.isEdited = true;
+
+  if (dragging) {
+    if (_rafPending) return;
+    _rafPending = true;
+    requestAnimationFrame(() => {
+      _rafPending = false;
+      const bars = document.querySelectorAll('.palette-bar');
+      const bar  = bars[_pickerIndex];
+      if (bar) {
+        const simHex = activeSimulation === 'none' ? hex : applyMatrix(hex, CVD_MATRICES[activeSimulation]);
+        bar.style.backgroundColor = simHex;
+        const pill = bar.querySelector('.color-value-pill');
+        if (pill) pill.textContent = fmtColorValue(hex, state.colorModes[_pickerIndex]);
+      }
+      renderPreview();
+      _syncPreview();
+    });
+  } else {
+    renderPalette(); renderPreview(); renderWcagGrid(); renderMood();
+    encodeURL();
+    document.getElementById('btn-save-fav').classList.remove('saved');
+  }
+}
+
+function _bindPickerEvents() {
+  const slCanvas  = _picker.querySelector('.cpk__sl-canvas');
+  const hueCanvas = _picker.querySelector('.cpk__hue-canvas');
+  const hexInput  = _picker.querySelector('.cpk__hex-input');
+
+  let dragging = null;
+
+  function slAt(e) {
+    const r = slCanvas.getBoundingClientRect();
+    // getBoundingClientRect gives CSS pixels — no scaling needed.
+    // Clamp to [0, W] and [0, H] in CSS pixels.
+    const W = r.width;
+    const H = r.height;
+    const x = clamp(e.clientX - r.left, 0, W);
+    const y = clamp(e.clientY - r.top,  0, H);
+    // Forward mapping (matches _moveHandle inverse):
+    //   S = (x / W) * 100
+    //   L = (1 - y/H) * (100 - S/2)
+    _pickerS = Math.round((x / W) * 100);
+    _pickerL = Math.round((1 - y / H) * (100 - _pickerS / 2));
+    _pickerL = clamp(_pickerL, 0, 100);
+  }
+
+  function hueAt(e) {
+    const r = hueCanvas.getBoundingClientRect();
+    const x = clamp(e.clientX - r.left, 0, r.width);
+    _pickerH = Math.round((x / r.width) * 360);
+  }
+
+  slCanvas.addEventListener('pointerdown', e => {
+    dragging = 'sl'; slCanvas.setPointerCapture(e.pointerId);
+    slAt(e); _moveHandle(); _syncHex(); _syncPreview(); _applyColor(false);
+  });
+  slCanvas.addEventListener('pointermove', e => {
+    if (dragging !== 'sl') return;
+    slAt(e); _moveHandle(); _syncHex(); _syncPreview(); _applyColor(true);
+  });
+  slCanvas.addEventListener('pointerup', e => {
+    if (dragging !== 'sl') return;
+    dragging = null; slAt(e); _moveHandle(); _syncHex(); _syncPreview(); _applyColor(false);
+  });
+
+  hueCanvas.addEventListener('pointerdown', e => {
+    dragging = 'hue'; hueCanvas.setPointerCapture(e.pointerId);
+    hueAt(e); _drawSL(); _moveHandle(); _syncHex(); _syncPreview(); _applyColor(false);
+  });
+  hueCanvas.addEventListener('pointermove', e => {
+    if (dragging !== 'hue') return;
+    hueAt(e); _drawSL(); _moveHandle(); _syncHex(); _syncPreview(); _applyColor(true);
+  });
+  hueCanvas.addEventListener('pointerup', e => {
+    if (dragging !== 'hue') return;
+    dragging = null; hueAt(e); _drawSL(); _moveHandle(); _syncHex(); _syncPreview(); _applyColor(false);
+  });
+
+  hexInput.addEventListener('input', e => {
+    const v = e.target.value.replace(/[^0-9a-fA-F]/g, '');
+    if (v.length === 6) {
+      const { h, s, l } = hexToHsl('#' + v);
+      _pickerH = h; _pickerS = s; _pickerL = l;
+      _drawSL(); _moveHandle(); _syncPreview(); _applyColor(false);
+    }
+  });
+  hexInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter') closeColorPicker();
+    e.stopPropagation();
+  });
+
+  _picker.querySelector('.cpk__close').addEventListener('click', closeColorPicker);
+
+  document.addEventListener('pointerdown', e => {
+    if (!_picker.classList.contains('open')) return;
+    if (_picker.contains(e.target)) return;
+    if (e.target.closest('.btn-edit-swatch')) return;
+    closeColorPicker();
+  }, true);
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeColorPicker();
   });
 }
 
@@ -516,67 +1083,470 @@ function renderFonts() {
 /**
  * Render the live preview card.
  * 
- * ISOLATION RULE: Only .preview-bg, .preview-headline,
- * .preview-copy, .preview-overline, .preview-strip-seg,
- * and .preview-chip receive generated colors.
- * Everything else is themed via CSS variables.
+/* ─────────────────────────────────────────
+   COLOR ROLE MAPPING
+   Consistent semantic assignment used across ALL preview templates
+   and export formats. This is the contract between generation and output.
+
+   color[0] → bg        — primary/darkest background
+   color[1] → surface   — secondary surface (cards, sidebar)
+   color[2] → accent    — interactive / CTA (buttons, links, highlights)
+   color[3] → muted     — supporting detail, borders, secondary text
+   color[4] → light     — lightest surface, text on dark backgrounds
+───────────────────────────────────────── */
+function colorRoles() {
+  /*
+    IMPORTANT: reads from simColors(), not state.colors.
+    This single change means every template (editorial, UI, dashboard)
+    automatically shows the simulated palette without any other changes.
+    The actual state.colors are never overwritten.
+  */
+  const [bg, surface, accent, muted, light] = simColors();
+  return {
+    bg, surface, accent, muted, light,
+    onBg:      readableColor(bg),
+    onSurface: readableColor(surface),
+    onAccent:  readableColor(accent),
+    onLight:   readableColor(light),
+  };
+}
+
+/* ─────────────────────────────────────────
+   9b. PREVIEW STATE
+   Tracks which template is active. Persists across generates.
+───────────────────────────────────────── */
+let activeTemplate   = 'editorial'; // 'editorial' | 'ui' | 'dashboard'
+/*
+  activeSimulation: which CVD type is active, or 'none'.
+  Read-only view mode — never modifies state.colors.
+  Affects: palette bar rendering, all preview templates, WCAG grid.
+*/
+let activeSimulation = 'none'; // 'none' | 'deuteranopia' | 'protanopia' | 'tritanopia' | 'achromatopsia'
+
+/**
+ * Master preview renderer — delegates to the active template.
+ * Called by renderAll() every time state changes.
  */
 function renderPreview() {
-  const [c0, , , c3] = state.colors;
+  const stage = document.getElementById('preview-stage');
+  if (!stage) return;
+
+  switch (activeTemplate) {
+    case 'ui':        renderUIPreview(stage);        break;
+    case 'dashboard': renderDashboardPreview(stage); break;
+    default:          renderEditorialPreview(stage); break;
+  }
+}
+
+/* ── TEMPLATE 1: EDITORIAL ───────────────
+   The original layout: large headline, body copy, color chips.
+   Context: landing pages, editorial sites, brand presentations.
+───────────────────────────────────────── */
+
+/*
+  Placeholder copy rotates on each generate so the preview feels alive
+  rather than being the same Lorem Ipsum every time.
+  Content is intentionally design/brand adjacent — feels realistic,
+  not generic placeholder text.
+*/
+const EDITORIAL_COPY = [
+  {
+    overline: 'Collection No. 01',
+    headline: 'Visual harmony starts here',
+    body: 'Every great design begins with a considered palette and a thoughtful type system. These are the silent foundations on which meaning is built.',
+  },
+  {
+    overline: 'Studio Notes',
+    headline: 'Color tells the story first',
+    body: 'Before a single word is read, color has already set the emotional register. The palette is not decoration — it is the message itself.',
+  },
+  {
+    overline: 'Design Principles',
+    headline: 'Form follows feeling',
+    body: 'The best interfaces feel inevitable. Every element earns its place through purpose, contrast, and the quiet confidence of a well-chosen palette.',
+  },
+  {
+    overline: 'Brand Identity',
+    headline: 'Distinctiveness is a decision',
+    body: 'Memorable brands are not accidents. They are the result of deliberate choices — in color, in type, in the space between things.',
+  },
+  {
+    overline: 'Creative Direction',
+    headline: 'Restraint is a superpower',
+    body: 'Five colors, two typefaces, and a clear hierarchy. Everything a designer needs to build something beautiful. Nothing more.',
+  },
+  {
+    overline: 'Type & Color',
+    headline: 'The grid holds everything together',
+    body: 'Rhythm in typography. Harmony in color. A consistent system that lets creativity flourish within structure rather than despite it.',
+  },
+];
+
+// Points to a different copy set each time generate() runs.
+// Initialized at 0, updated before each render.
+let editorialCopyIndex = 0;
+
+function renderEditorialPreview(stage) {
+  const r = colorRoles();
   const { display, body } = state.fontPair;
-  const fg     = readableColor(c0);
-  const accent = c3;
+  const copy = EDITORIAL_COPY[editorialCopyIndex % EDITORIAL_COPY.length];
 
-  // Background from darkest color
-  document.getElementById('preview-bg').style.backgroundColor = c0;
+  stage.innerHTML = `
+    <div class="prev-editorial" style="background:${r.bg}">
+      <div class="prev-editorial__content">
+        <p class="prev-overline" style="color:${r.accent};font-family:'${body}',sans-serif">
+          ${copy.overline}
+        </p>
+        <h3 class="prev-headline" style="color:${r.onBg};font-family:'${display}',Georgia,serif">
+          ${copy.headline}
+        </h3>
+        <p class="prev-body" style="color:${r.onBg};font-family:'${body}',sans-serif;opacity:.72">
+          ${copy.body}
+        </p>
+        <div class="prev-chips">
+          ${simColors().map(c => `<span class="prev-chip" style="background:${c}"></span>`).join('')}
+        </div>
+      </div>
+      <div class="prev-strip" aria-hidden="true">
+        ${simColors().map(c => `<div style="flex:1;background:${c}"></div>`).join('')}
+      </div>
+    </div>
+  `;
+}
 
-  // Text elements — font and color both from generation
-  const headline = document.getElementById('preview-headline');
-  headline.style.fontFamily = `'${display}', Georgia, serif`;
-  headline.style.color = fg;
+/*
+  UI & Dashboard placeholder copy — rotates with same index so all
+  three templates feel like they belong to the same "project".
+*/
+const UI_PROJECTS = [
+  { name: 'Brand Refresh 2025',     label: 'Design',     badge: 'In progress', progress: 68 },
+  { name: 'Landing Page Redesign',  label: 'Marketing',  badge: 'In review',   progress: 91 },
+  { name: 'Component Library v2',   label: 'System',     badge: 'In progress', progress: 44 },
+  { name: 'Onboarding Flow',        label: 'Product',    badge: 'Planning',    progress: 22 },
+  { name: 'Mobile App UI Kit',      label: 'Design',     badge: 'In progress', progress: 57 },
+  { name: 'Dashboard Analytics',    label: 'Data',       badge: 'In review',   progress: 83 },
+];
 
-  const overline = document.getElementById('preview-overline');
-  overline.style.color = accent;
+/* ── TEMPLATE 2: UI COMPONENTS ───────────
+   Buttons, card, input, badge — the core building blocks of any
+   web interface. Answers "does this palette work for a real UI?"
+   Context: web apps, SaaS dashboards, mobile apps.
+   
+   NOTE: Buttons inside the preview are intentionally non-interactive —
+   this is a design mockup, not a live app. A "mockup" label in the
+   card header makes this clear to users.
+───────────────────────────────────────── */
+function renderUIPreview(stage) {
+  const r = colorRoles();
+  const { display, body } = state.fontPair;
+  const fontStack    = `'${body}',system-ui,sans-serif`;
+  const displayStack = `'${display}',Georgia,serif`;
+  const project      = UI_PROJECTS[editorialCopyIndex % UI_PROJECTS.length];
+  // Simulated colors for swatches (purely visual)
+  const sc = simColors();
 
-  const copy = document.getElementById('preview-copy');
-  copy.style.fontFamily = `'${body}', system-ui, sans-serif`;
-  copy.style.color = fg;
+  stage.innerHTML = `
+    <div class="prev-ui" style="background:${r.bg};font-family:${fontStack}">
 
-  // Dot chips
-  document.getElementById('preview-chips').innerHTML =
-    state.colors.map(c =>
-      `<div class="preview-chip" style="background:${c};border:1.5px solid ${readableColor(c)}22"></div>`
-    ).join('');
+      <!-- Top bar -->
+      <div class="prev-ui__topbar" style="background:${r.surface};border-bottom:1px solid ${r.muted}22">
+        <span class="prev-ui__logo" style="color:${r.onSurface};font-family:${displayStack}">Æsthetic</span>
+        <nav class="prev-ui__nav">
+          <span class="prev-ui__nav-item active" style="color:${r.accent}">Home</span>
+          <span class="prev-ui__nav-item" style="color:${r.onSurface};opacity:.55">Explore</span>
+          <span class="prev-ui__nav-item" style="color:${r.onSurface};opacity:.55">Saved</span>
+        </nav>
+        <button class="prev-btn prev-btn--primary prev-btn--mockup"
+                style="background:${r.accent};color:${r.onAccent}"
+                title="Mockup preview — not interactive"
+                aria-hidden="true" tabindex="-1">Get started</button>
+      </div>
 
-  // Right-edge strip: one segment per color
-  document.getElementById('preview-strip').innerHTML =
-    state.colors.map(c =>
-      `<div class="preview-strip-seg" style="background:${c}"></div>`
-    ).join('');
+      <!-- Content area -->
+      <div class="prev-ui__body">
+
+        <!-- Card -->
+        <div class="prev-ui__card" style="background:${r.surface};border:1px solid ${r.muted}33">
+          <div class="prev-ui__card-top">
+            <div>
+              <div class="prev-ui__card-label" style="color:${r.muted};font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.3rem">
+                ${project.label} Project
+              </div>
+              <div class="prev-ui__card-title" style="color:${r.onSurface};font-family:${displayStack};font-size:1.1rem;font-weight:400;letter-spacing:-.02em">
+                ${project.name}
+              </div>
+            </div>
+            <span class="prev-badge" style="background:${r.accent}22;color:${r.accent};border:1px solid ${r.accent}44">
+              ${project.badge}
+            </span>
+          </div>
+          <div class="prev-ui__card-meta" style="color:${r.muted}">
+            <span>Updated just now</span>
+            <span>·</span>
+            <span>4 collaborators</span>
+          </div>
+          <div class="prev-progress-track" style="background:${r.bg};margin-top:.85rem">
+            <div class="prev-progress-fill" style="background:${r.accent};width:${project.progress}%"></div>
+          </div>
+        </div>
+
+        <!-- Input + Button row -->
+        <div class="prev-ui__actions">
+          <div class="prev-input-wrap" style="border:1px solid ${r.muted}44;background:${r.surface}">
+            <span style="color:${r.muted};font-size:.78rem">Search palettes…</span>
+          </div>
+          <button class="prev-btn prev-btn--primary prev-btn--mockup"
+                  style="background:${r.accent};color:${r.onAccent}"
+                  title="Mockup preview — not interactive"
+                  aria-hidden="true" tabindex="-1">Search</button>
+          <button class="prev-btn prev-btn--ghost prev-btn--mockup"
+                  style="border:1px solid ${r.muted}55;color:${r.onBg};background:transparent"
+                  title="Mockup preview — not interactive"
+                  aria-hidden="true" tabindex="-1">Filter</button>
+        </div>
+
+        <!-- Color swatches — use simColors so simulation shows correctly -->
+        <div class="prev-ui__swatches">
+          ${sc.map(c => `
+            <div class="prev-swatch-item">
+              <div class="prev-swatch-block" style="background:${c}"></div>
+              <span class="prev-swatch-label" style="color:${r.muted}">${c.toUpperCase()}</span>
+            </div>`).join('')}
+        </div>
+
+      </div>
+    </div>
+  `;
+}
+
+/* ── TEMPLATE 3: DASHBOARD ───────────────
+   Sidebar, stat cards, bar chart — the classic SaaS shell.
+   Answers "does this palette work for a data-dense product UI?"
+   Context: analytics dashboards, admin panels, product tools.
+───────────────────────────────────────── */
+function renderDashboardPreview(stage) {
+  const r = colorRoles();
+  const { display, body } = state.fontPair;
+  const fontStack    = `'${body}',system-ui,sans-serif`;
+  const displayStack = `'${display}',Georgia,serif`;
+  const sc           = simColors(); // simulated colors for visual strips
+
+  // Bar chart heights — decorative, not data-driven
+  const bars    = [45, 72, 58, 88, 63, 79, 52];
+  const barMax  = 88;
+
+  stage.innerHTML = `
+    <div class="prev-dash" style="background:${r.bg};font-family:${fontStack}">
+
+      <!-- Sidebar -->
+      <aside class="prev-dash__sidebar" style="background:${r.surface};border-right:1px solid ${r.muted}22">
+        <div class="prev-dash__brand" style="color:${r.onSurface};font-family:${displayStack}">Æsthetic</div>
+        <nav class="prev-dash__nav">
+          ${['Overview','Palettes','Typography','Export'].map((label, i) => `
+            <div class="prev-dash__nav-item ${i === 0 ? 'active' : ''}"
+                 style="${i === 0
+                   ? `background:${r.accent}18;color:${r.accent};`
+                   : `color:${r.onSurface};opacity:.5;`}">
+              <div class="prev-dash__nav-dot" style="background:${i === 0 ? r.accent : r.muted};opacity:${i === 0 ? 1 : .4}"></div>
+              ${label}
+            </div>`).join('')}
+        </nav>
+        <div class="prev-dash__palette-strip" style="margin-top:auto;padding-top:1rem;border-top:1px solid ${r.muted}22">
+          ${sc.map(c => `<div style="height:6px;background:${c};flex:1"></div>`).join('')}
+        </div>
+      </aside>
+
+      <!-- Main content -->
+      <main class="prev-dash__main">
+        <div class="prev-dash__stats">
+          ${[
+            { label: 'Palettes', value: '247', delta: '+12%' },
+            { label: 'Exports',  value: '89',  delta: '+5%'  },
+            { label: 'Saved',    value: '34',  delta: '+8%'  },
+          ].map(stat => `
+            <div class="prev-stat-card" style="background:${r.surface};border:1px solid ${r.muted}22">
+              <div class="prev-stat-label" style="color:${r.muted}">${stat.label}</div>
+              <div class="prev-stat-value" style="color:${r.onSurface};font-family:${displayStack}">${stat.value}</div>
+              <div class="prev-stat-delta" style="color:${r.accent}">${stat.delta}</div>
+            </div>`).join('')}
+        </div>
+
+        <div class="prev-dash__chart" style="background:${r.surface};border:1px solid ${r.muted}22">
+          <div class="prev-chart-header">
+            <span style="color:${r.onSurface};font-size:.72rem;font-weight:600">Generations this week</span>
+            <span style="color:${r.muted};font-size:.62rem">last 7 days</span>
+          </div>
+          <div class="prev-chart-bars">
+            ${bars.map((h, i) => `
+              <div class="prev-chart-col">
+                <div class="prev-bar-fill"
+                     style="height:${Math.round((h/barMax)*100)}%;background:${i === 3 ? r.accent : r.accent + '55'}">
+                </div>
+                <span class="prev-bar-label" style="color:${r.muted}">${['M','T','W','T','F','S','S'][i]}</span>
+              </div>`).join('')}
+          </div>
+        </div>
+      </main>
+    </div>
+  `;
+}
+
+/* ─────────────────────────────────────────
+   12. EXPORT FUNCTIONS
+   
+   Semantic color names used across all formats:
+   bg / surface / accent / muted / light
+   This makes exports immediately useful — not --color-1 through --color-5.
+───────────────────────────────────────── */
+
+/** Upgraded CSS export with semantic variable names */
+function exportCSS() {
+  const r = colorRoles();
+  const lines = [
+    `/* Æsthetic — "${state.moodName}" · ${state.scheme} */`,
+    `/* ${state.fontPair.display} / ${state.fontPair.body} */`,
+    `/* Generated at aesthetic.app */`,
+    '',
+    ':root {',
+    `  /* Colors */`,
+    `  --color-bg:      ${r.bg};`,
+    `  --color-surface: ${r.surface};`,
+    `  --color-accent:  ${r.accent};`,
+    `  --color-muted:   ${r.muted};`,
+    `  --color-light:   ${r.light};`,
+    '',
+    `  /* Typography */`,
+    `  --font-display: '${state.fontPair.display}', serif;`,
+    `  --font-body:    '${state.fontPair.body}', sans-serif;`,
+    '}',
+  ].join('\n');
+  copyText(lines, 'CSS variables copied!');
 }
 
 /**
- * Render WCAG contrast rows below the preview.
- * Each row shows a color vs. white and vs. black.
- * Rationale: designers need to know how usable each color is as a bg.
+ * Tailwind config export.
+ * Produces a colors block you paste into tailwind.config.js.
+ * Uses a nested palette structure: aesthetic.bg, aesthetic.accent, etc.
+ * This is the format most searched by frontend developers.
  */
+function exportTailwind() {
+  const r = colorRoles();
+  const name = state.moodName.toLowerCase().replace(/\s+/g, '-');
+  const lines = [
+    `// tailwind.config.js — "${state.moodName}"`,
+    `// Paste inside your theme.extend.colors block`,
+    ``,
+    `module.exports = {`,
+    `  theme: {`,
+    `    extend: {`,
+    `      colors: {`,
+    `        '${name}': {`,
+    `          bg:      '${r.bg}',`,
+    `          surface: '${r.surface}',`,
+    `          accent:  '${r.accent}',`,
+    `          muted:   '${r.muted}',`,
+    `          light:   '${r.light}',`,
+    `        },`,
+    `      },`,
+    `      fontFamily: {`,
+    `        display: ["'${state.fontPair.display}'", 'serif'],`,
+    `        body:    ["'${state.fontPair.body}'",    'sans-serif'],`,
+    `      },`,
+    `    },`,
+    `  },`,
+    `};`,
+  ].join('\n');
+  copyText(lines, 'Tailwind config copied!');
+}
+
+/**
+ * Figma Variables JSON export.
+ * Produces a JSON file that the "Import Variables" Figma plugin
+ * (by Figma Community) can import directly as a color library.
+ *
+ * Format: { collections: [{ name, modes, variables }] }
+ * Each variable has a name, type: "COLOR", and valuesByMode.
+ *
+ * Reference: https://www.figma.com/community/plugin/1253254026460019
+ */
+function exportFigma() {
+  const r = colorRoles();
+
+  /*
+    Helper: convert hex to Figma's RGBA float format { r, g, b, a }
+    Figma uses 0–1 floats, not 0–255 integers.
+  */
+  function hexToFigmaRgb(hex) {
+    const { r, g, b } = hexToRgb(hex);
+    return { r: +(r/255).toFixed(4), g: +(g/255).toFixed(4), b: +(b/255).toFixed(4), a: 1 };
+  }
+
+  const variables = [
+    { name: 'color/bg',      value: hexToFigmaRgb(r.bg)      },
+    { name: 'color/surface', value: hexToFigmaRgb(r.surface)  },
+    { name: 'color/accent',  value: hexToFigmaRgb(r.accent)   },
+    { name: 'color/muted',   value: hexToFigmaRgb(r.muted)    },
+    { name: 'color/light',   value: hexToFigmaRgb(r.light)    },
+  ];
+
+  const payload = {
+    version:     '1.0',
+    metadata: {
+      name:   state.moodName,
+      scheme: state.scheme,
+      source: 'aesthetic.app',
+    },
+    collections: [{
+      name:  state.moodName,
+      modes: [{ name: 'Default', modeId: 'mode-1' }],
+      variables: variables.map((v, i) => ({
+        id:   `var-${i + 1}`,
+        name: v.name,
+        type: 'COLOR',
+        valuesByMode: { 'mode-1': v.value },
+      })),
+    }],
+  };
+
+  // Download as .json file
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = `aesthetic-${state.moodName.toLowerCase().replace(/\s+/g, '-')}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('Figma JSON downloaded!');
+}
 function renderWcagGrid() {
   const container = document.getElementById('wcag-grid');
   container.innerHTML = '';
 
-  state.colors.forEach((hex, i) => {
-    const vsWhite = contrastRatio(hex, '#FFFFFF').toFixed(1);
-    const vsBlack = contrastRatio(hex, '#000000').toFixed(1);
-    const lvlWhite = wcagLevel(hex, '#FFFFFF');
-    const lvlBlack = wcagLevel(hex, '#000000');
+  /*
+    When simulation is active, WCAG grid shows the simulated colors —
+    this is the most useful mode: it tells you whether the palette is
+    still accessible to people with that type of color blindness.
+    The real hex is shown in parentheses so you know the original.
+  */
+  const colors = simColors();
+  const isSimulating = activeSimulation !== 'none';
 
-    const classMap = { 'AAA': 'ok-aaa', 'AA': 'ok-aa', 'FAIL': 'no-pass' };
+  colors.forEach((hex, i) => {
+    const realHex   = state.colors[i];
+    const vsWhite   = contrastRatio(hex, '#FFFFFF').toFixed(1);
+    const vsBlack   = contrastRatio(hex, '#000000').toFixed(1);
+    const lvlWhite  = wcagLevel(hex, '#FFFFFF');
+    const lvlBlack  = wcagLevel(hex, '#000000');
+    const classMap  = { 'AAA': 'ok-aaa', 'AA': 'ok-aa', 'FAIL': 'no-pass' };
 
     const row = document.createElement('div');
     row.className = 'wcag-row';
     row.innerHTML = `
       <div class="wcag-swatch" style="background:${hex}" aria-hidden="true"></div>
-      <span class="wcag-hex">${hex.toUpperCase()}</span>
+      <span class="wcag-hex">
+        ${hex.toUpperCase()}
+        ${isSimulating ? `<span class="wcag-real-hex" title="Original color">(${realHex.toUpperCase()})</span>` : ''}
+      </span>
       <span class="wcag-desc">on white: ${vsWhite}:1</span>
       <span class="wcag-pill ${classMap[lvlWhite]}" title="WCAG on white background">${lvlWhite}</span>
       <span class="wcag-desc">on black: ${vsBlack}:1</span>
@@ -585,13 +1555,12 @@ function renderWcagGrid() {
     container.appendChild(row);
   });
 
-  // Update the summary badge in the palette section header
-  // (compares color[0] vs color[4] as a quick overall signal)
-  const summaryLevel = wcagLevel(state.colors[0], state.colors[4]);
-  const ratio = contrastRatio(state.colors[0], state.colors[4]).toFixed(1);
-  const badge = document.getElementById('wcag-badge');
-  badge.textContent = `${summaryLevel} · ${ratio}:1`;
-  badge.className = `wcag-badge lvl-${summaryLevel.toLowerCase()}`;
+  // Summary badge always reflects current view (simulated or real)
+  const summaryLevel = wcagLevel(colors[0], colors[4]);
+  const ratio        = contrastRatio(colors[0], colors[4]).toFixed(1);
+  const badge        = document.getElementById('wcag-badge');
+  badge.textContent  = `${summaryLevel} · ${ratio}:1`;
+  badge.className    = `wcag-badge lvl-${summaryLevel.toLowerCase()}`;
 }
 
 /** Render the favorites panel list */
@@ -769,21 +1738,6 @@ function decodeURL() {
   }
 }
 /* ─────────────────────────────────────────
-   12. EXPORT CSS
-───────────────────────────────────────── */
-function exportCSS() {
-  const lines = [
-    ':root {',
-    `  /* Æsthetic — "${state.moodName}" · ${state.scheme} */`,
-    ...state.colors.map((c, i) => `  --color-${i + 1}: ${c};`),
-    `  --font-display: '${state.fontPair.display}', serif;`,
-    `  --font-body:    '${state.fontPair.body}', sans-serif;`,
-    '}',
-  ].join('\n');
-  copyText(lines, 'CSS variables copied!');
-}
-
-/* ─────────────────────────────────────────
    13. EXPORT PNG (Canvas API)
 ───────────────────────────────────────── */
 function exportPNG() {
@@ -887,53 +1841,149 @@ function showToast(msg) {
    15. EVENT BINDINGS
 ───────────────────────────────────────── */
 function bindEvents() {
-  // Generate
-  document.getElementById('btn-generate').addEventListener('click', generate);
+  // Generate — blur after click so Space doesn't re-trigger this button
+  document.getElementById('btn-generate').addEventListener('click', e => {
+    generate();
+    e.currentTarget.blur();
+  });
 
-  // Space = generate (if focus not on a button/input)
+  // Space = generate (if focus not on a text input)
+  // We blur the active element first — this prevents the browser from
+  // firing a click on the focused button when Space is pressed, which
+  // would cause the button's active/stuck visual state.
   document.addEventListener('keydown', e => {
-    if (e.code === 'Space' && !['BUTTON','INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName)) {
+    if (e.code === 'Space') {
+      const tag = document.activeElement.tagName;
+      if (['INPUT','TEXTAREA','SELECT'].includes(tag)) return; // let Space work in text fields
       e.preventDefault();
+      // Blur whatever is focused — removes the stuck button state
+      if (document.activeElement && document.activeElement !== document.body) {
+        document.activeElement.blur();
+      }
       generate();
     }
-    // Escape closes panel
-    if (e.key === 'Escape') closeFavoritesPanel();
+    if (e.key === 'Escape') { closeFavoritesPanel(); closeExportPanel(); }
   });
 
-  // Presets
+  // Presets — blur after click
   document.querySelectorAll('.btn-preset').forEach(btn => {
-    btn.addEventListener('click', () => loadPreset(btn.dataset.preset));
+    btn.addEventListener('click', e => { loadPreset(btn.dataset.preset); e.currentTarget.blur(); });
   });
 
-  // Font locks
+  // Font locks — blur after click
   document.querySelectorAll('.btn-lock-font').forEach(btn => {
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', e => {
       const t = btn.dataset.target;
       if (t === 'display') state.lockedDisplay = !state.lockedDisplay;
       if (t === 'body')    state.lockedBody    = !state.lockedBody;
       renderFonts();
+      e.currentTarget.blur();
     });
   });
 
-  // Toolbar buttons
-  document.getElementById('btn-export-css').addEventListener('click', exportCSS);
-  document.getElementById('btn-export-png').addEventListener('click', exportPNG);
-  document.getElementById('btn-share').addEventListener('click', () => {
-    const url = buildShareURL();
-    if (url) copyText(url, 'Link copied! ↗');
-    else copyText(window.location.href, 'Link copied!');
-  }
-  );
+  // Preview template tabs
+  document.querySelectorAll('.preview-tab').forEach(tab => {
+    tab.addEventListener('click', e => {
+      activeTemplate = tab.dataset.template;
+      document.querySelectorAll('.preview-tab').forEach(t => {
+        t.classList.toggle('active', t === tab);
+        t.setAttribute('aria-selected', t === tab ? 'true' : 'false');
+      });
+      renderPreview();
+      e.currentTarget.blur();
+    });
+  });
 
-  // Save / favorites
-  document.getElementById('btn-save-fav').addEventListener('click', saveCurrentFavorite);
-  document.getElementById('btn-favorites-panel').addEventListener('click', openFavoritesPanel);
-  document.getElementById('btn-close-panel').addEventListener('click', closeFavoritesPanel);
+  // Color blindness simulation buttons
+  document.querySelectorAll('.sim-btn').forEach(btn => {
+    btn.addEventListener('click', e => {
+      activeSimulation = btn.dataset.sim;
+
+      document.querySelectorAll('.sim-btn').forEach(b => {
+        b.classList.toggle('active', b === btn);
+        b.setAttribute('aria-pressed', b === btn ? 'true' : 'false');
+      });
+
+      const simBar = document.getElementById('sim-bar');
+      simBar.classList.toggle('simulating', activeSimulation !== 'none');
+
+      const badge = document.getElementById('sim-badge');
+      if (activeSimulation === 'none') {
+        badge.textContent = '';
+        badge.classList.remove('visible');
+      } else {
+        const labels = {
+          deuteranopia:  'Deuteranopia · red-green, green-weak',
+          protanopia:    'Protanopia · red-green, red-weak',
+          tritanopia:    'Tritanopia · blue-yellow',
+          achromatopsia: 'Achromatopsia · full grayscale',
+        };
+        badge.textContent = labels[activeSimulation];
+        badge.classList.add('visible');
+      }
+
+      renderAll();
+      e.currentTarget.blur(); // e is now correctly in scope
+    });
+  });
+
+  // Export buttons — blur after click so Space doesn't re-trigger
+  ['btn-export-css','btn-export-tailwind','btn-export-figma','btn-export-png'].forEach(id => {
+    const handlers = {
+      'btn-export-css':      exportCSS,
+      'btn-export-tailwind': exportTailwind,
+      'btn-export-figma':    exportFigma,
+      'btn-export-png':      exportPNG,
+    };
+    document.getElementById(id).addEventListener('click', e => {
+      handlers[id]();
+      e.currentTarget.blur();
+    });
+  });
+
+  // Share
+  document.getElementById('btn-share').addEventListener('click', e => {
+    copyText(buildShareURL(), 'Link copied! ↗');
+    e.currentTarget.blur();
+  });
+
+  // Save / favorites — blur after click
+  document.getElementById('btn-save-fav').addEventListener('click', e => {
+    saveCurrentFavorite();
+    e.currentTarget.blur();
+  });
+  document.getElementById('btn-favorites-panel').addEventListener('click', e => {
+    openFavoritesPanel();
+    e.currentTarget.blur();
+  });
+  document.getElementById('btn-close-panel').addEventListener('click', e => {
+    closeFavoritesPanel();
+    e.currentTarget.blur();
+  });
   document.getElementById('panel-overlay').addEventListener('click', closeFavoritesPanel);
 
   // Dark mode toggle
   document.getElementById('theme-checkbox').addEventListener('change', e => setTheme(e.target.checked));
+
+  // Swatch count toggle (3 / 5)
+  document.querySelectorAll('.swatch-count-btn').forEach(btn => {
+    btn.addEventListener('click', e => {
+      const count = parseInt(btn.dataset.count, 10);
+      if (count === state.swatchCount) return;
+      state.swatchCount = count;
+      document.querySelectorAll('.swatch-count-btn').forEach(b => {
+        b.classList.toggle('active', b === btn);
+        b.setAttribute('aria-pressed', b === btn ? 'true' : 'false');
+      });
+      renderPalette();
+      renderPreview();
+      renderWcagGrid();
+      e.currentTarget.blur();
+    });
+  });
 }
+
+function closeExportPanel() {} // placeholder for future export panel if needed
 
 /* ─────────────────────────────────────────
    16. INIT

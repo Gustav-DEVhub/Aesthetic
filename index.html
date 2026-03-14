@@ -3,17 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/png" href="favicon.png" />
 
   <!-- ── SEO & Social ── -->
   <title>Æsthetic — Color Palette & Font Pairing Generator</title>
   <meta name="description" content="Generate harmonious color palettes and font pairings in one click. Export CSS variables, check WCAG contrast, and save your favorites." />
   <meta name="author" content="Æsthetic" />
   <link rel="canonical" href="https://gustavo-devhub.github.io/color-font-generator/" />
-
-  <!-- ── Favicon ── -->
-  <link rel="icon" type="image/png" href="favicon.png" />
-  <link rel="shortcut icon" href="favicon.png" />
-  <link rel="apple-touch-icon" href="favicon.png" />
 
   <!-- Open Graph — controls how link looks when shared on social -->
   <meta property="og:type"        content="website" />
@@ -70,9 +66,7 @@
             <span class="fav-count-badge" id="fav-count-badge" aria-label="saved count">0</span>
           </button>
 
-          <button id="btn-export-css" class="btn-ghost" title="Copy palette as CSS custom properties">CSS</button>
-          <button id="btn-export-png" class="btn-ghost" title="Download as PNG card">PNG</button>
-          <button id="btn-share"      class="btn-ghost" title="Copy shareable link">Share</button>
+          <button id="btn-share" class="btn-ghost" title="Copy shareable link">Share</button>
 
           <!-- Dark / light toggle -->
           <label class="theme-toggle" title="Toggle dark mode" aria-label="Toggle dark mode">
@@ -143,6 +137,11 @@
       <div class="card__header">
         <h2 class="card__title" id="palette-heading">Color Palette</h2>
         <div class="card__header-right">
+          <!-- Swatch count toggle -->
+          <div class="swatch-count" role="group" aria-label="Number of colors">
+            <button class="swatch-count-btn" data-count="3" aria-pressed="false">3</button>
+            <button class="swatch-count-btn active" data-count="5" aria-pressed="true">5</button>
+          </div>
           <span class="wcag-badge" id="wcag-badge" role="status" aria-live="polite"
                 title="WCAG contrast ratio — darkest vs. lightest color">—</span>
         </div>
@@ -150,7 +149,7 @@
       <div class="palette-bars" id="palette-bars" role="list" aria-label="Color palette swatches">
         <!-- JS rendered -->
       </div>
-      <p class="card__hint">Click a value to cycle HEX → RGB → HSL and copy. 🔒 locks a color on next generate.</p>
+      <p class="card__hint">✏ Edit a color · Click a value to cycle HEX → RGB → HSL and copy · 🔒 locks a color on next generate.</p>
     </section>
 
     <!-- TYPE PAIRING -->
@@ -203,29 +202,127 @@
     <!--
       DESIGN DECISION: .preview-bg background-color is set by JS using generated colors.
       The card shell (.card, .card__header) always uses theme tokens.
-      This keeps generated output spotlighted against a neutral frame.
+      Generated colors are applied ONLY inside .preview-stage via JS.
     -->
     <section class="card preview-card" aria-labelledby="preview-heading">
       <div class="card__header">
         <h2 class="card__title" id="preview-heading">Preview</h2>
-        <span class="card__hint-inline">Colors in a realistic UI context</span>
+
+        <!-- Template switcher tabs -->
+        <div class="preview-tabs" role="tablist" aria-label="Preview template">
+          <button class="preview-tab active" role="tab" aria-selected="true"
+                  data-template="editorial" aria-controls="preview-stage">
+            Editorial
+          </button>
+          <button class="preview-tab" role="tab" aria-selected="false"
+                  data-template="ui" aria-controls="preview-stage">
+            UI
+          </button>
+          <button class="preview-tab" role="tab" aria-selected="false"
+                  data-template="dashboard" aria-controls="preview-stage">
+            Dashboard
+          </button>
+        </div>
+
+        <span class="card__hint-inline">
+          <span class="mockup-pill" title="Buttons and interactions inside this preview are decorative — this is a design mockup, not a live interface">Mockup</span>
+          Color preview
+        </span>
       </div>
 
-      <div class="preview-bg" id="preview-bg" aria-label="Live preview of generated aesthetic">
-        <div class="preview-content" id="preview-content">
-          <p class="preview-overline" id="preview-overline">Collection No. 01</p>
-          <h3 class="preview-headline" id="preview-headline">Visual harmony starts here</h3>
-          <p class="preview-copy" id="preview-copy">
-            Every great design begins with a considered palette and a thoughtful type system. These are the silent foundations on which meaning is built.
-          </p>
-          <div class="preview-chips" id="preview-chips"></div>
+      <!-- Color blindness simulation controls -->
+      <!--
+        Simulation is a VIEW MODE — it never changes state.colors.
+        When active, all palette bars, preview templates, and WCAG
+        grid show the transformed colors. The original hex values
+        are still shown in the pills so you always copy the real color.
+      -->
+      <div class="sim-bar" id="sim-bar" role="group" aria-label="Color blindness simulation">
+        <span class="sim-bar__label">Simulate:</span>
+        <div class="sim-controls">
+          <button class="sim-btn active" data-sim="none" aria-pressed="true">
+            Normal
+          </button>
+          <button class="sim-btn" data-sim="deuteranopia" aria-pressed="false"
+                  title="Red-green color blindness, green-weak (~6% of men)">
+            Deuteranopia
+          </button>
+          <button class="sim-btn" data-sim="protanopia" aria-pressed="false"
+                  title="Red-green color blindness, red-weak (~2% of men)">
+            Protanopia
+          </button>
+          <button class="sim-btn" data-sim="tritanopia" aria-pressed="false"
+                  title="Blue-yellow color blindness (~0.01%)">
+            Tritanopia
+          </button>
+          <button class="sim-btn" data-sim="achromatopsia" aria-pressed="false"
+                  title="Complete color blindness — full grayscale">
+            Achromatopsia
+          </button>
         </div>
-        <div class="preview-strip" id="preview-strip" aria-hidden="true"></div>
+        <!-- Active simulation badge — hidden when 'none' -->
+        <span class="sim-badge" id="sim-badge" aria-live="polite"></span>
+      </div>
+
+      <!-- All three templates rendered here by JS -->
+      <div class="preview-stage" id="preview-stage"
+           role="tabpanel" aria-live="polite" aria-label="Preview of generated aesthetic">
       </div>
 
       <!-- Per-color WCAG contrast rows -->
       <div class="wcag-grid" id="wcag-grid" aria-label="WCAG contrast details">
         <!-- JS rendered -->
+      </div>
+    </section>
+
+    <!-- EXPORT PANEL -->
+    <section class="card export-card" aria-labelledby="export-heading">
+      <div class="card__header">
+        <h2 class="card__title" id="export-heading">Export</h2>
+        <span class="card__hint-inline">Use this palette in your projects</span>
+      </div>
+      <div class="export-grid" id="export-grid">
+
+        <div class="export-option">
+          <div class="export-option__info">
+            <span class="export-option__name">CSS Variables</span>
+            <span class="export-option__desc">Custom properties with semantic names, ready to paste into any stylesheet</span>
+          </div>
+          <button class="btn-export-action" id="btn-export-css" aria-label="Copy CSS variables">
+            Copy
+          </button>
+        </div>
+
+        <div class="export-option">
+          <div class="export-option__info">
+            <span class="export-option__name">Tailwind Config</span>
+            <span class="export-option__desc">Drop into <code>tailwind.config.js</code> as a named color palette</span>
+          </div>
+          <button class="btn-export-action" id="btn-export-tailwind" aria-label="Copy Tailwind config">
+            Copy
+          </button>
+        </div>
+
+        <div class="export-option">
+          <div class="export-option__info">
+            <span class="export-option__name">Figma JSON</span>
+            <span class="export-option__desc">Import as a color library using the Figma Variables plugin</span>
+          </div>
+          <button class="btn-export-action" id="btn-export-figma" aria-label="Download Figma JSON">
+            Download
+          </button>
+        </div>
+
+        <div class="export-option">
+          <div class="export-option__info">
+            <span class="export-option__name">PNG Card</span>
+            <span class="export-option__desc">1200×630 shareable image — great for social media or documentation</span>
+          </div>
+          <button class="btn-export-action" id="btn-export-png" aria-label="Download PNG card">
+            Download
+          </button>
+        </div>
+
       </div>
     </section>
 

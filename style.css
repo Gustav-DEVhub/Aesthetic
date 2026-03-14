@@ -107,7 +107,18 @@ body {
   transition: background var(--t-slow) var(--ease), color var(--t-slow) var(--ease);
 }
 button { cursor: pointer; border: none; background: none; font-family: inherit; }
+
+/*
+  FOCUS FIX: `:focus-visible` only shows the outline for keyboard navigation
+  (Tab key), NOT for mouse clicks. This stops buttons looking "stuck" after
+  being clicked with a mouse. The outline still appears for keyboard users —
+  that's the correct accessible behaviour.
+
+  `:focus:not(:focus-visible)` removes any residual outline that some browsers
+  still apply on mouse-click despite :focus-visible being set globally.
+*/
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: var(--r-sm); }
+:focus:not(:focus-visible) { outline: none; }
 
 /* Shell elements transition on theme change */
 .header, .card, .btn-ghost, .btn-preset, .toggle-track, .favorites-panel {
@@ -442,6 +453,35 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   letter-spacing: .08em; text-transform: uppercase; color: var(--text-3);
 }
 .card__header-right { display: flex; align-items: center; gap: .75rem; }
+
+/* Swatch count toggle: 3 / 5 pills */
+.swatch-count {
+  display: flex;
+  gap: 2px;
+  background: var(--surface-inset);
+  border: 1px solid var(--border);
+  border-radius: var(--r-pill);
+  padding: 2px;
+}
+.swatch-count-btn {
+  font-family: var(--f-mono);
+  font-size: .65rem;
+  font-weight: 600;
+  letter-spacing: .04em;
+  color: var(--text-3);
+  padding: .2rem .55rem;
+  border-radius: var(--r-pill);
+  transition: background var(--t-fast), color var(--t-fast);
+  cursor: pointer;
+}
+.swatch-count-btn.active {
+  background: var(--text-1);
+  color: var(--bg);
+}
+.swatch-count-btn:not(.active):hover {
+  color: var(--text-1);
+  background: var(--surface-alt);
+}
 .card__hint {
   font-family: var(--f-body); font-size: .7rem; color: var(--text-4);
   padding: .65rem 1.5rem 1.25rem; line-height: 1.5;
@@ -481,12 +521,12 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   justify-content: space-between;
   padding: 0 1.5rem;
   height: 80px;
-  /* background-color set by JS */
-  transition: height .25s var(--ease);
+  /* background-color set by JS — transition makes every color change feel smooth */
+  transition: height .25s var(--ease), background-color .45s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
-  /* Animate on new generation */
   animation: barSlideIn .3s var(--ease) both;
+  cursor: default;
 }
 /* Stagger each bar's entrance animation */
 .palette-bar:nth-child(1) { animation-delay: .00s; }
@@ -554,6 +594,244 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 .btn-lock-swatch:hover       { transform: scale(1.14); box-shadow: 0 2px 8px rgba(0,0,0,.2); }
 .btn-lock-swatch.locked      { background: rgba(255,255,255,.3); border-color: rgba(255,255,255,.5); }
 .btn-lock-swatch.locked.dark-btn { background: rgba(0,0,0,.25); border-color: rgba(0,0,0,.45); }
+
+/*
+  Edit button + hidden color input wrapper.
+  The input[type=color] is the real interactive element — we just hide
+  it visually and layer our styled button on top of it.
+  position:absolute + opacity:0 keeps it in the DOM and clickable
+  (required for programmatic .click() to work on Safari/Firefox).
+*/
+.btn-edit-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer; /* set here so it applies even before the button is pointer-events:auto */
+}
+
+.btn-edit-swatch {
+  width: 32px; height: 32px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(0,0,0,.1); border: 1px solid rgba(0,0,0,.06);
+  transition: background .15s, transform .15s, box-shadow .15s, opacity .15s;
+  opacity: 0;
+  pointer-events: none;
+  cursor: pointer;
+}
+.btn-edit-swatch svg { pointer-events: none; cursor: pointer; }
+.btn-edit-swatch.light-btn {
+  background: rgba(255,255,255,.16);
+  border-color: rgba(255,255,255,.18);
+}
+/* Show edit button on bar hover, and when picker is active */
+.palette-bar:hover .btn-edit-swatch,
+.palette-bar.picker-open .btn-edit-swatch,
+.btn-edit-wrapper:focus-within .btn-edit-swatch {
+  opacity: 1;
+  pointer-events: auto;
+  cursor: pointer;
+}
+.btn-edit-swatch:hover {
+  transform: scale(1.14);
+  box-shadow: 0 2px 8px rgba(0,0,0,.2);
+  background: rgba(0,0,0,.22);
+}
+.btn-edit-swatch.light-btn:hover { background: rgba(255,255,255,.3); }
+
+/*
+  Palette bar grain texture: promoted to its own composited layer.
+  
+  WHY: During live color-picker drag, bar background-color changes every
+  rAF. Without will-change, the browser re-rasterizes the entire bar
+  including the ::after grain SVG on every frame — causing visible
+  pixelation as the composite and paint operations collide.
+  
+  With will-change: transform, the browser promotes the ::after
+  pseudo-element to its own GPU layer, so the background repaint
+  no longer triggers a re-rasterize of the grain texture.
+*/
+.palette-bar::after {
+  content: '';
+  position: absolute; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  mix-blend-mode: overlay;
+  opacity: .35;
+  will-change: transform; /* promote to GPU layer — prevents pixelation during bg-color paint */
+}
+
+
+/* Mockup label pill — clarifies that preview buttons are decorative */
+.mockup-pill {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--f-mono);
+  font-size: .56rem;
+  font-weight: 500;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  background: var(--surface-inset);
+  border: 1px solid var(--border);
+  padding: .15rem .45rem;
+  border-radius: var(--r-pill);
+  opacity: .75;
+}
+
+/* Mockup buttons inside preview templates — clearly non-interactive */
+.prev-btn--mockup {
+  cursor: default;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* ─────────────────────────────────────────
+   COLOR PICKER (.cpk)
+───────────────────────────────────────── */
+.cpk {
+  position: absolute;
+  z-index: 9999;
+  width: 236px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0,0,0,.18), 0 2px 8px rgba(0,0,0,.1);
+  padding: 10px;
+  display: none;
+  flex-direction: column;
+  gap: 10px;
+  cursor: default;
+}
+.cpk.open {
+  display: flex;
+  animation: cpkOpen .12s ease-out forwards;
+}
+@keyframes cpkOpen {
+  from { opacity: 0; transform: translateY(-6px) scale(.97); }
+  to   { opacity: 1; transform: translateY(0)    scale(1); }
+}
+
+/* ── SL gradient area ── */
+.cpk__sl {
+  position: relative;
+  flex-shrink: 0;
+  border-radius: 6px;
+  overflow: visible;
+  touch-action: none;
+  line-height: 0;
+  cursor: default;
+}
+.cpk__sl-canvas {
+  display: block;
+  width: 216px;
+  height: 148px;
+  border-radius: 6px;
+  cursor: default;
+}
+.cpk__sl-handle {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 1px rgba(0,0,0,.55);
+  pointer-events: none;
+  top: -6px; left: -6px;
+}
+
+/* ── Hue strip ── */
+.cpk__hue {
+  position: relative;
+  flex-shrink: 0;
+  border-radius: 999px;
+  touch-action: none;
+  line-height: 0;
+  cursor: default;
+}
+.cpk__hue-canvas {
+  display: block;
+  width: 216px;
+  height: 12px;
+  border-radius: 999px;
+  cursor: default;
+}
+.cpk__hue-handle {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2.5px solid #fff;
+  box-shadow: 0 0 0 1px rgba(0,0,0,.45), 0 1px 4px rgba(0,0,0,.3);
+  pointer-events: none;
+  top: -2px; left: -8px; /* centred vertically on the 12px strip; JS sets left */
+}
+
+/* ── Footer: preview swatch + hex + close ── */
+.cpk__footer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-top: 2px;
+}
+.cpk__preview {
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.cpk__hex-wrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  background: var(--surface-inset);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0 8px;
+  gap: 3px;
+  height: 28px;
+}
+.cpk__hash {
+  font-family: var(--f-mono);
+  font-size: .7rem;
+  color: var(--text-3);
+  user-select: none;
+}
+.cpk__hex-input {
+  font-family: var(--f-mono);
+  font-size: .7rem;
+  color: var(--text-1);
+  background: none;
+  border: none;
+  outline: none;
+  width: 100%;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+.cpk__close {
+  font-size: .6rem;
+  color: var(--text-3);
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background var(--t-fast), color var(--t-fast);
+  cursor: pointer;
+}
+.cpk__close:hover { background: var(--surface-alt); color: var(--text-1); }
+.cpk__close:focus:not(:focus-visible) { outline: none; }
+
+/* "edited" indicator inside the scheme tag */
+.tag-edited {
+  font-size: .52rem;
+  letter-spacing: .06em;
+  opacity: .65;
+  font-style: normal;
+}
 
 /* ─────────────────────────────────────────
    TYPE PAIRING
@@ -626,52 +904,346 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 }
 
 /* ─────────────────────────────────────────
-   LIVE PREVIEW CARD
+   PREVIEW CARD — TABS + STAGE
    
-   ISOLATION: Only .preview-bg, text inside it, and strip
-   receive generated colors (via inline style from JS).
-   .card__header and .wcag-grid stay on theme tokens.
+   ISOLATION: The .preview-stage receives only JS-injected inline styles.
+   .card__header and .wcag-grid always use theme tokens.
 ───────────────────────────────────────── */
 .preview-card .card__header {
   border-bottom: 1px solid var(--border);
-  padding-bottom: 1rem;
+  padding-bottom: .9rem;
+  gap: .75rem;
+  flex-wrap: wrap;
 }
 
-.preview-bg {
-  position: relative;
-  min-height: 300px;
-  display: flex; align-items: center;
-  transition: background-color .45s var(--ease);
+/* Template tab bar */
+.preview-tabs {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  background: var(--surface-inset);
+  border: 1px solid var(--border);
+  border-radius: var(--r-pill);
+  padding: 3px;
+}
+
+.preview-tab {
+  font-family: var(--f-body);
+  font-size: .7rem;
+  font-weight: 600;
+  color: var(--text-3);
+  padding: .26rem .8rem;
+  border-radius: var(--r-pill);
+  letter-spacing: .01em;
+  transition: background var(--t-fast), color var(--t-fast), box-shadow var(--t-fast);
+}
+.preview-tab:hover  { background: var(--surface); color: var(--text-1); }
+.preview-tab.active {
+  background: var(--surface);
+  color: var(--text-1);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ── Simulation bar ── */
+/*
+  Lives between the card header and the preview stage.
+  Slightly inset background to signal it's a control, not content.
+  When a simulation is active, the bar gets a subtle amber tint —
+  a clear "you are in a view mode" signal without being alarming.
+*/
+.sim-bar {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  padding: .6rem 1.5rem;
+  background: var(--surface-inset);
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+  transition: background var(--t-base);
+}
+.sim-bar.simulating {
+  background: color-mix(in srgb, var(--surface-inset), #f59e0b 6%);
+  border-bottom-color: #f59e0b33;
+}
+
+.sim-bar__label {
+  font-family: var(--f-mono);
+  font-size: .62rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  flex-shrink: 0;
+}
+
+.sim-controls {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  flex-wrap: wrap;
+}
+
+.sim-btn {
+  font-family: var(--f-mono);
+  font-size: .64rem;
+  font-weight: 500;
+  color: var(--text-2);
+  padding: .26rem .7rem;
+  border-radius: var(--r-pill);
+  border: 1px solid transparent;
+  transition: background var(--t-fast), color var(--t-fast), border-color var(--t-fast);
+  letter-spacing: .01em;
+}
+.sim-btn:hover {
+  background: var(--surface);
+  color: var(--text-1);
+  border-color: var(--border);
+}
+.sim-btn.active {
+  background: var(--surface);
+  color: var(--text-1);
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-xs);
+}
+/* The active non-Normal button gets an amber accent */
+.sim-bar.simulating .sim-btn.active {
+  background: #f59e0b18;
+  color: #92610a;
+  border-color: #f59e0b55;
+}
+[data-theme="dark"] .sim-bar.simulating .sim-btn.active {
+  background: #f59e0b14;
+  color: #fbbf24;
+  border-color: #f59e0b44;
+}
+
+/* Simulation active badge */
+.sim-badge {
+  font-family: var(--f-mono);
+  font-size: .6rem;
+  color: #92610a;
+  letter-spacing: .04em;
+  opacity: 0;
+  transform: translateY(2px);
+  transition: opacity var(--t-base), transform var(--t-base);
+  margin-left: auto;
+}
+[data-theme="dark"] .sim-badge { color: #fbbf24; }
+.sim-badge.visible { opacity: 1; transform: translateY(0); }
+
+/* WCAG grid: real hex label (shown alongside simulated hex) */
+.wcag-real-hex {
+  font-size: .55rem;
+  opacity: .5;
+  margin-left: .25rem;
+  font-style: italic;
+}
+
+/* The stage renders each template's full HTML */
+.preview-stage {
+  min-height: 280px;
   overflow: hidden;
 }
 
-/* Subtle grain texture overlay — adds depth without altering hue */
-.preview-bg::after {
+/* ── Template 1: Editorial ── */
+.prev-editorial {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 280px;
+  overflow: hidden;
+  transition: background-color .4s var(--ease);
+}
+.prev-editorial::after {
+  /* Grain texture for depth */
   content: '';
   position: absolute; inset: 0;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
   pointer-events: none; mix-blend-mode: overlay; opacity: .5;
 }
-
-.preview-content {
-  padding: clamp(2rem, 5vw, 3.5rem);
-  max-width: 560px;
-  display: flex; flex-direction: column; gap: .85rem;
+.prev-editorial__content {
+  padding: clamp(1.75rem, 4vw, 3rem);
+  max-width: 520px;
+  display: flex; flex-direction: column; gap: .75rem;
   position: relative; z-index: 1;
 }
-/* All preview text colors set by JS */
-.preview-overline { font-size: .62rem; letter-spacing: .16em; text-transform: uppercase; font-family: var(--f-mono); opacity: .6; }
-.preview-headline { font-size: clamp(1.75rem, 4.5vw, 2.8rem); font-weight: 400; letter-spacing: -.03em; line-height: 1.1; }
-.preview-copy     { font-size: .88rem; line-height: 1.78; opacity: .72; max-width: 420px; }
-.preview-chips    { display: flex; gap: .35rem; margin-top: .3rem; }
-.preview-chip     { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
-
-/* Right-edge vertical strip */
-.preview-strip {
+.prev-overline   { font-size: .58rem; letter-spacing: .16em; text-transform: uppercase; opacity: .8; }
+.prev-headline   { font-size: clamp(1.55rem, 4vw, 2.5rem); font-weight: 400; letter-spacing: -.03em; line-height: 1.1; }
+.prev-body       { font-size: .84rem; line-height: 1.75; max-width: 400px; }
+.prev-chips      { display: flex; gap: .35rem; margin-top: .25rem; }
+.prev-chip       { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+.prev-strip {
   position: absolute; right: 0; top: 0; bottom: 0; width: 8px;
   display: flex; flex-direction: column;
 }
-.preview-strip-seg { flex: 1; transition: background-color .45s var(--ease); }
+
+/* ── Template 2: UI Components ── */
+.prev-ui {
+  min-height: 300px;
+  transition: background-color .4s var(--ease);
+}
+.prev-ui__topbar {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  padding: .65rem 1.5rem;
+}
+.prev-ui__logo  { font-size: 1rem; font-weight: 400; letter-spacing: -.02em; }
+.prev-ui__nav   { display: flex; align-items: center; gap: 1rem; margin-right: auto; }
+.prev-ui__nav-item { font-size: .72rem; font-weight: 500; cursor: default; }
+.prev-ui__nav-item.active { font-weight: 600; }
+
+.prev-ui__body  { padding: 1rem 1.5rem 1.5rem; display: flex; flex-direction: column; gap: .85rem; }
+
+.prev-ui__card  { border-radius: var(--r-md); padding: 1rem 1.1rem; }
+.prev-ui__card-top  { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: .5rem; }
+.prev-ui__card-meta { font-size: .62rem; display: flex; gap: .4rem; }
+
+.prev-badge {
+  font-size: .58rem; font-weight: 600; letter-spacing: .05em;
+  padding: .18rem .55rem; border-radius: var(--r-pill);
+  white-space: nowrap; flex-shrink: 0;
+}
+
+.prev-progress-track {
+  height: 5px; border-radius: 999px; overflow: hidden;
+}
+.prev-progress-fill  { height: 100%; border-radius: 999px; }
+
+.prev-ui__actions { display: flex; gap: .5rem; align-items: center; }
+.prev-input-wrap  {
+  flex: 1; border-radius: var(--r-sm); padding: .45rem .75rem;
+  font-size: .76rem;
+}
+.prev-btn {
+  font-size: .72rem; font-weight: 600; padding: .45rem .9rem;
+  border-radius: var(--r-sm); border: none; cursor: default; white-space: nowrap;
+}
+
+.prev-ui__swatches {
+  display: flex; gap: .6rem; flex-wrap: wrap; padding-top: .25rem;
+}
+.prev-swatch-item  { display: flex; flex-direction: column; align-items: center; gap: .3rem; }
+.prev-swatch-block { width: 32px; height: 32px; border-radius: var(--r-sm); }
+.prev-swatch-label { font-size: .5rem; letter-spacing: .04em; font-family: var(--f-mono); }
+
+/* ── Template 3: Dashboard ── */
+.prev-dash {
+  display: flex;
+  min-height: 300px;
+  overflow: hidden;
+  transition: background-color .4s var(--ease);
+}
+.prev-dash__sidebar {
+  width: 120px;
+  flex-shrink: 0;
+  padding: 1rem .75rem;
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+  transition: background-color .4s var(--ease);
+}
+.prev-dash__brand {
+  font-size: .9rem; font-weight: 400; letter-spacing: -.02em;
+  margin-bottom: .5rem; padding-bottom: .5rem;
+}
+.prev-dash__nav      { display: flex; flex-direction: column; gap: .2rem; }
+.prev-dash__nav-item {
+  font-size: .64rem; font-weight: 500; padding: .35rem .5rem;
+  border-radius: var(--r-sm); display: flex; align-items: center; gap: .45rem;
+  cursor: default;
+}
+.prev-dash__nav-dot  { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+.prev-dash__palette-strip { display: flex; border-radius: var(--r-sm); overflow: hidden; height: 6px; }
+
+.prev-dash__main { flex: 1; padding: 1rem; display: flex; flex-direction: column; gap: .75rem; overflow: hidden; }
+
+.prev-dash__stats { display: flex; gap: .6rem; }
+.prev-stat-card   { flex: 1; border-radius: var(--r-sm); padding: .65rem .75rem; min-width: 0; }
+.prev-stat-label  { font-size: .57rem; letter-spacing: .08em; text-transform: uppercase; margin-bottom: .2rem; }
+.prev-stat-value  { font-size: 1.15rem; font-weight: 400; letter-spacing: -.03em; line-height: 1; }
+.prev-stat-delta  { font-size: .58rem; font-weight: 600; margin-top: .2rem; }
+
+.prev-dash__chart { border-radius: var(--r-sm); padding: .75rem; }
+.prev-chart-header {
+  display: flex; justify-content: space-between; align-items: center; margin-bottom: .65rem;
+}
+.prev-chart-bars  {
+  display: flex; align-items: flex-end; gap: .3rem;
+  height: 70px;
+}
+.prev-chart-col   { flex: 1; display: flex; flex-direction: column; align-items: center; gap: .25rem; height: 100%; justify-content: flex-end; }
+.prev-bar-fill    { width: 100%; border-radius: 3px 3px 0 0; min-height: 4px; transition: background-color .4s var(--ease); }
+.prev-bar-label   { font-size: .5rem; font-family: var(--f-mono); }
+
+/* ─────────────────────────────────────────
+   EXPORT CARD
+───────────────────────────────────────── */
+.export-card .card__header { border-bottom: 1px solid var(--border); }
+
+.export-grid {
+  display: flex;
+  flex-direction: column;
+}
+
+.export-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+  transition: background var(--t-fast);
+}
+.export-option:last-child { border-bottom: none; }
+.export-option:hover { background: var(--surface-alt); }
+
+.export-option__info { display: flex; flex-direction: column; gap: .25rem; flex: 1; min-width: 0; }
+
+.export-option__name {
+  font-family: var(--f-head);
+  font-size: .82rem;
+  font-weight: 600;
+  color: var(--text-1);
+}
+.export-option__desc {
+  font-family: var(--f-body);
+  font-size: .72rem;
+  color: var(--text-3);
+  line-height: 1.5;
+}
+.export-option__desc code {
+  font-family: var(--f-mono);
+  font-size: .68rem;
+  background: var(--surface-inset);
+  padding: .05em .3em;
+  border-radius: 3px;
+  border: 1px solid var(--border);
+  color: var(--text-2);
+}
+
+.btn-export-action {
+  font-family: var(--f-mono);
+  font-size: .65rem;
+  font-weight: 500;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  color: var(--text-1);
+  padding: .42rem 1.1rem;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  box-shadow: var(--shadow-xs);
+  flex-shrink: 0;
+  transition: all var(--t-fast);
+}
+.btn-export-action:hover {
+  background: var(--text-1);
+  color: var(--bg);
+  border-color: var(--text-1);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+.btn-export-action:active { transform: translateY(0); }
 
 /* ─────────────────────────────────────────
    WCAG INLINE GRID
@@ -813,9 +1385,16 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   .header__actions { gap: .5rem; }
   .palette-bar { padding: 0 1rem; }
   .wcag-grid { margin: 0 1rem 1rem; }
-  .preview-content { padding: 1.5rem; }
   .card__header { padding: 1rem 1rem .7rem; }
   .card__hint { padding: .5rem 1rem 1rem; }
+  .preview-card .card__header { gap: .5rem; }
+  .preview-tabs .preview-tab { padding: .24rem .6rem; font-size: .65rem; }
+  /* Dashboard sidebar hides on mobile — too narrow */
+  .prev-dash__sidebar { display: none; }
+  .prev-dash__stats { flex-direction: column; gap: .4rem; }
+  /* Export card rows stack on mobile */
+  .export-option { flex-direction: column; align-items: flex-start; gap: .65rem; }
+  .btn-export-action { align-self: flex-start; }
 }
 @media (max-width: 440px) {
   :root { --gutter: 1rem; }
@@ -823,6 +1402,9 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   .btn-ghost { padding: .32rem .55rem; font-size: .6rem; }
   .hero__mood { font-size: 2rem; }
   .header__tools { gap: .2rem; }
+  .prev-ui__topbar { padding: .55rem 1rem; }
+  .prev-ui__body { padding: .75rem 1rem 1rem; }
+  .prev-editorial__content { padding: 1.25rem; }
 }
 
 /* ─────────────────────────────────────────
