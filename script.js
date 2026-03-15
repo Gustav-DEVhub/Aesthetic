@@ -491,6 +491,10 @@ const state = {
     colorRoles() maps the first N into semantic slots.
   */
   swatchCount:   5,
+  // Live font preview controls
+  previewText:   '',    // empty = show default placeholder text
+  previewSize:   100,   // slider value 60–160, maps to CSS multiplier /100
+  previewWeight: 400,   // 100–900 in steps of 100
 };
 
 /* ─────────────────────────────────────────
@@ -1064,11 +1068,33 @@ function renderFonts() {
   const { display, body } = state.fontPair;
 
   document.getElementById('font-display-name').textContent = display;
-  // Set generated font on the preview text only — not on the tile meta row
   document.getElementById('preview-display').style.fontFamily = `'${display}', Georgia, serif`;
 
   document.getElementById('font-body-name').textContent = body;
   document.getElementById('preview-body').style.fontFamily = `'${body}', system-ui, sans-serif`;
+
+  // Apply custom preview text (empty = restore default placeholder)
+  const DEFAULTS = {
+    display: 'The art of design',
+    body: 'Good typography is invisible. It guides the reader through content effortlessly, never calling attention to itself — only to the meaning within.',
+  };
+  const custom = state.previewText.trim();
+  document.getElementById('preview-display').textContent = custom || DEFAULTS.display;
+  document.getElementById('preview-body').textContent    = custom || DEFAULTS.body;
+
+  // Apply size + weight via CSS custom properties on each tile
+  // --preview-size is a multiplier (value/100), --preview-weight is the raw weight
+  document.querySelectorAll('.type-tile').forEach(tile => {
+    tile.style.setProperty('--preview-size',   state.previewSize / 100);
+    tile.style.setProperty('--preview-weight', state.previewWeight);
+  });
+
+  // Sync slider positions to state (in case renderFonts is called from
+  // generate() or loadPreset() — sliders should not reset visually)
+  const sizeEl   = document.getElementById('font-preview-size');
+  const weightEl = document.getElementById('font-preview-weight');
+  if (sizeEl)   sizeEl.value   = state.previewSize;
+  if (weightEl) weightEl.value = state.previewWeight;
 
   // Update lock button states + ARIA
   document.querySelectorAll('.btn-lock-font').forEach(btn => {
@@ -1076,7 +1102,7 @@ function renderFonts() {
     const locked = target === 'display' ? state.lockedDisplay : state.lockedBody;
     btn.setAttribute('aria-pressed', String(locked));
     btn.title = (locked ? 'Unlock' : 'Lock') + ' ' + target + ' font';
-    btn.classList.toggle('active', locked); // CSS picks up :not([aria-pressed="false"])
+    btn.classList.toggle('active', locked);
   });
 }
 
@@ -1981,9 +2007,44 @@ function bindEvents() {
       e.currentTarget.blur();
     });
   });
+
+  // ── Live font preview controls ────────────────────────────────────
+  // Text input — updates both tiles instantly, Space key still works
+  // (input is a text field so the Space guard in keydown already skips it)
+  const previewTextEl   = document.getElementById('font-preview-text');
+  const previewSizeEl   = document.getElementById('font-preview-size');
+  const previewWeightEl = document.getElementById('font-preview-weight');
+
+  previewTextEl.addEventListener('input', () => {
+    state.previewText = previewTextEl.value;
+    const custom = state.previewText.trim();
+    const DEFAULTS = {
+      display: 'The art of design',
+      body: 'Good typography is invisible. It guides the reader through content effortlessly, never calling attention to itself — only to the meaning within.',
+    };
+    document.getElementById('preview-display').textContent = custom || DEFAULTS.display;
+    document.getElementById('preview-body').textContent    = custom || DEFAULTS.body;
+  });
+
+  // Prevent Space from triggering generate while typing in the text field
+  previewTextEl.addEventListener('keydown', e => e.stopPropagation());
+
+  previewSizeEl.addEventListener('input', () => {
+    state.previewSize = parseInt(previewSizeEl.value, 10);
+    document.querySelectorAll('.type-tile').forEach(tile => {
+      tile.style.setProperty('--preview-size', state.previewSize / 100);
+    });
+  });
+
+  previewWeightEl.addEventListener('input', () => {
+    state.previewWeight = parseInt(previewWeightEl.value, 10);
+    document.querySelectorAll('.type-tile').forEach(tile => {
+      tile.style.setProperty('--preview-weight', state.previewWeight);
+    });
+  });
 }
 
-function closeExportPanel() {} // placeholder for future export panel if needed
+function closeExportPanel() {} // no-op — kept for Escape handler compatibility
 
 /* ─────────────────────────────────────────
    16. INIT

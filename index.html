@@ -13,14 +13,16 @@
 
   <!-- Open Graph — controls how link looks when shared on social -->
   <meta property="og:type"        content="website" />
-  <meta property="og:title"       content="Æsthetic — Color Palette & Font Generator" />
+  <meta property="og:title"       content="Æsthetic — Color Palette &amp; Font Generator" />
   <meta property="og:description" content="Generate harmonious color palettes and font pairings. Save favorites, export CSS, check WCAG contrast." />
   <meta property="og:url"         content="https://gustavo-devhub.github.io/color-font-generator/" />
+  <meta property="og:image"       content="https://gustavo-devhub.github.io/color-font-generator/preview.png" />
 
   <!-- Twitter / X card -->
   <meta name="twitter:card"        content="summary_large_image" />
-  <meta name="twitter:title"       content="Æsthetic — Color Palette & Font Generator" />
+  <meta name="twitter:title"       content="Æsthetic — Color Palette &amp; Font Generator" />
   <meta name="twitter:description" content="Generate harmonious color palettes and font pairings. One click. Save, export, share." />
+  <meta name="twitter:image"       content="https://gustavo-devhub.github.io/color-font-generator/preview.png" />
 
   <!-- Mobile browser chrome color -->
   <meta name="theme-color" content="#F2F1ED" media="(prefers-color-scheme: light)" />
@@ -156,6 +158,25 @@
     <section class="card type-card" aria-labelledby="type-heading">
       <div class="card__header">
         <h2 class="card__title" id="type-heading">Type Pairing</h2>
+        <!-- Live preview controls -->
+        <div class="type-controls" role="group" aria-label="Font preview controls">
+          <input class="type-controls__text" id="font-preview-text"
+                 type="text" maxlength="120" spellcheck="false"
+                 placeholder="Type to preview…"
+                 aria-label="Preview text" />
+          <label class="type-controls__label" aria-label="Font size">
+            <span class="type-controls__icon">Aa</span>
+            <input class="type-controls__range" id="font-preview-size"
+                   type="range" min="60" max="160" value="100" step="5"
+                   aria-label="Font size" aria-valuemin="60" aria-valuemax="160" />
+          </label>
+          <label class="type-controls__label" aria-label="Font weight">
+            <span class="type-controls__icon">W</span>
+            <input class="type-controls__range" id="font-preview-weight"
+                   type="range" min="100" max="900" value="400" step="100"
+                   aria-label="Font weight" aria-valuemin="100" aria-valuemax="900" />
+          </label>
+        </div>
       </div>
       <div class="type-grid">
 

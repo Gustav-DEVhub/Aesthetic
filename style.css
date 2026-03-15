@@ -444,7 +444,8 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 .card:hover { box-shadow: var(--shadow-md); }
 
 .card__header {
-  display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 1rem;
   padding: 1.35rem 1.5rem .75rem;
   border-bottom: 1px solid var(--border);
 }
@@ -836,13 +837,92 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 /* ─────────────────────────────────────────
    TYPE PAIRING
 ───────────────────────────────────────── */
+/*
+  Type preview controls — text input + size/weight sliders.
+  Lives in .card__header so it shares the header's flex layout.
+  Sliders update --preview-size and --preview-weight on the tile
+  via JS, which the preview text reads via var().
+*/
+.type-controls {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  margin-left: auto; /* push to right of title */
+  flex-shrink: 1;
+  min-width: 0;
+}
+.type-controls__text {
+  font-family: var(--f-mono);
+  font-size: .7rem;
+  color: var(--text-1);
+  background: var(--surface-inset);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: .3rem .6rem;
+  height: 28px;
+  width: 160px;
+  outline: none;
+  transition: border-color var(--t-fast), box-shadow var(--t-fast);
+}
+.type-controls__text::placeholder { color: var(--text-4); }
+.type-controls__text:focus {
+  border-color: var(--border-strong);
+  box-shadow: 0 0 0 2px var(--accent-light);
+}
+.type-controls__label {
+  display: flex;
+  align-items: center;
+  gap: .35rem;
+  flex-shrink: 0;
+}
+.type-controls__icon {
+  font-family: var(--f-mono);
+  font-size: .58rem;
+  font-weight: 600;
+  color: var(--text-3);
+  letter-spacing: .04em;
+  user-select: none;
+  width: 12px;
+  text-align: center;
+}
+.type-controls__range {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 72px;
+  height: 3px;
+  border-radius: 999px;
+  background: var(--border-strong);
+  outline: none;
+  cursor: pointer;
+}
+.type-controls__range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  background: var(--text-1);
+  border: 2px solid var(--surface);
+  box-shadow: 0 0 0 1px var(--border-strong);
+  transition: transform var(--t-fast), box-shadow var(--t-fast);
+}
+.type-controls__range::-moz-range-thumb {
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  background: var(--text-1);
+  border: 2px solid var(--surface);
+  box-shadow: 0 0 0 1px var(--border-strong);
+}
+.type-controls__range:hover::-webkit-slider-thumb,
+.type-controls__range:focus::-webkit-slider-thumb {
+  transform: scale(1.2);
+  box-shadow: 0 0 0 2px var(--accent-light), 0 0 0 1px var(--border-strong);
+}
+
 .type-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1px;
   background: var(--border);
   margin: 0;
-  /* card handles outer radius */
 }
 
 .type-tile {
@@ -891,16 +971,28 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 /*
   Type previews.
   IMPORTANT: font-family is set only by JS (the generated font).
-  Never set font-family in CSS here — it would override generation.
+  font-size and font-weight are driven by CSS custom properties
+  set on the tile by JS — sliders update these in real time.
+  --preview-size: multiplier (0.6–1.6), default 1.
+  --preview-weight: 100–900, default 400.
 */
-.type-preview { color: var(--text-1); line-height: 1.3; transition: color var(--t-slow); }
+.type-preview {
+  color: var(--text-1);
+  line-height: 1.3;
+  transition: color var(--t-slow);
+  word-break: break-word;
+}
 .type-preview--display {
-  font-size: clamp(1.7rem, 3.2vw, 2.4rem);
-  font-weight: 400; letter-spacing: -.025em;
+  font-size: calc(clamp(1.7rem, 3.2vw, 2.4rem) * var(--preview-size, 1));
+  font-weight: var(--preview-weight, 400);
+  letter-spacing: -.025em;
 }
 .type-preview--body {
-  font-size: .9rem; font-weight: 400; line-height: 1.75;
-  color: var(--text-2); transition: color var(--t-slow);
+  font-size: calc(.9rem * var(--preview-size, 1));
+  font-weight: var(--preview-weight, 400);
+  line-height: 1.75;
+  color: var(--text-2);
+  transition: color var(--t-slow);
 }
 
 /* ─────────────────────────────────────────
@@ -1381,15 +1473,16 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   .hero__cta { align-self: stretch; align-items: stretch; }
   .btn-generate { width: 100%; }
   .type-grid { grid-template-columns: 1fr; }
+  .type-controls { margin-left: 0; width: 100%; flex-wrap: wrap; }
+  .type-controls__text { width: 100%; flex: 1 1 100%; }
   .header__inner { flex-wrap: wrap; gap: .6rem; }
   .header__actions { gap: .5rem; }
   .palette-bar { padding: 0 1rem; }
   .wcag-grid { margin: 0 1rem 1rem; }
-  .card__header { padding: 1rem 1rem .7rem; }
+  .card__header { padding: 1rem 1rem .7rem; flex-wrap: wrap; gap: .6rem; }
   .card__hint { padding: .5rem 1rem 1rem; }
   .preview-card .card__header { gap: .5rem; }
   .preview-tabs .preview-tab { padding: .24rem .6rem; font-size: .65rem; }
-  /* Dashboard sidebar hides on mobile — too narrow */
   .prev-dash__sidebar { display: none; }
   .prev-dash__stats { flex-direction: column; gap: .4rem; }
   /* Export card rows stack on mobile */
