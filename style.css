@@ -185,17 +185,11 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 .header__brand { display: flex; align-items: baseline; gap: .6rem; flex-shrink: 0; }
 .header__wordmark {
   font-family: var(--f-head);
-  font-size: 1.18rem;
+  font-size: 1.6rem;
   font-weight: 700;
-  letter-spacing: -.035em;
+  letter-spacing: -.045em;
   color: var(--text-1);
-}
-.header__tagline {
-  font-family: var(--f-mono);
-  font-size: .58rem;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  color: var(--text-3);
+  line-height: 1;
 }
 .header__actions { display: flex; align-items: center; gap: .75rem; flex-wrap: wrap; }
 .header__tools   { display: flex; align-items: center; gap: .35rem; }
@@ -1463,7 +1457,17 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   gap: 1rem; flex-wrap: wrap;
   border-top: 1px solid var(--border);
 }
-.footer__note { font-family: var(--f-mono); font-size: .6rem; letter-spacing: .06em; color: var(--text-4); }
+/* Left: brand name — slightly more weight so it reads as a signature */
+.footer__note { font-family: var(--f-mono); font-size: .6rem; letter-spacing: .06em; color: var(--text-3); }
+.footer__note:first-child {
+  font-family: var(--f-head);
+  font-size: .75rem;
+  font-weight: 700;
+  letter-spacing: -.02em;
+  color: var(--text-2);
+}
+/* Right: instructions — text-3 ensures readability in both light and dark */
+.footer__note:last-child { color: var(--text-3); }
 
 /* ─────────────────────────────────────────
    RESPONSIVE
@@ -1491,7 +1495,6 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 }
 @media (max-width: 440px) {
   :root { --gutter: 1rem; }
-  .header__tagline { display: none; }
   .btn-ghost { padding: .32rem .55rem; font-size: .6rem; }
   .hero__mood { font-size: 2rem; }
   .header__tools { gap: .2rem; }
