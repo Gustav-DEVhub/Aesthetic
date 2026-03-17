@@ -2,7 +2,7 @@
 
 A browser-based design tool that generates harmonious color palettes and font pairings, checks WCAG accessibility contrast, simulates color blindness, and exports production-ready tokens for CSS, Tailwind, and Figma.
 
-**[Live demo →](https://gustav-devhub.github.io/aesthetic-generator/)**
+**[Live demo →](https://Gustav-DEVhub.github.io/Aesthetic/)**
 
 ---
 
@@ -134,8 +134,8 @@ The script is organized into 16 numbered sections:
 No build step required.
 
 ```bash
-git clone https://github.com/Gustav-DEVhub/aesthetic-generator.git
-cd aesthetic-generator
+git clone https://github.com/Gustav-DEVhub/Aesthetic.git
+cd Aesthetic
 ```
 
 Open `index.html` in any modern browser. For Google Fonts to load, serve over HTTP rather than the `file://` protocol:
